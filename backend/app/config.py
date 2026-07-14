@@ -2,6 +2,7 @@
 OcchioEsperto.it — Configurazione applicazione
 """
 import os
+import sys
 
 # Base paths
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -15,9 +16,20 @@ APP_DB_PATH = os.path.join(DATA_DIR, "occhioesperto.db")
 DATABASE_URL = f"sqlite:///{APP_DB_PATH}"
 
 # Security
-SECRET_KEY = os.environ.get("SECRET_KEY", "occhio-esperto-dev-key-change-in-production-2024")
+_SECRET_KEY = os.environ.get("SECRET_KEY")
+if not _SECRET_KEY:
+    if os.environ.get("ENV", "development") == "production":
+        raise RuntimeError(
+            "❌ SECRET_KEY non impostata! "
+            "Imposta la variabile d'ambiente SECRET_KEY per la produzione.\n"
+            "Genera una chiave con: python3 -c \"import secrets; print(secrets.token_hex(32))\""
+        )
+    _SECRET_KEY = "occhio-esperto-dev-key-change-in-production-2024"
+    print("⚠️  WARNING: SECRET_KEY fallback usata. Imposta SECRET_KEY per produzione!")
+
+SECRET_KEY = _SECRET_KEY
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 1440  # 24 hours
+ACCESS_TOKEN_EXPIRE_MINUTES = 480  # 8 ore (ridotto da 24h per sicurezza)
 
 # Stripe
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
@@ -35,17 +47,30 @@ PLANS = {
                               "Verifica originalità", "Stima prezzi mercato", "1 domanda all'esperto AI"]},
 }
 
-# Rate limiting
+# Rate limiting (generale)
 RATE_LIMIT_REQUESTS = 60
 RATE_LIMIT_WINDOW_SECONDS = 60
 
-# CORS
-CORS_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "https://5eb182d861afc0802e1986e9f0250810.ctonew.app",
-    "https://occhioesperto.it",
-]
+# Rate limiting specifico per auth (login/register)
+AUTH_RATE_LIMIT = "10/minute"
+
+# Detect environment
+IS_PRODUCTION = os.environ.get("ENV", "development") == "production"
+
+# CORS — dinamico: in sviluppo include localhost, in produzione solo domini reali
+if IS_PRODUCTION:
+    CORS_ORIGINS = [
+        "https://5eb182d861afc0802e1986e9f0250810.ctonew.app",
+        "https://occhioesperto.it",
+    ]
+else:
+    CORS_ORIGINS = [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:5173",
+        "https://5eb182d861afc0802e1986e9f0250810.ctonew.app",
+    ]
 
 # Disclaimer
 DISCLAIMER = (

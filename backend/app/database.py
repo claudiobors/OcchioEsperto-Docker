@@ -5,7 +5,7 @@ Users, payments, leads, and user garages.
 import datetime
 from sqlalchemy import (
     Column, Integer, String, Float, Boolean, Text, DateTime, ForeignKey,
-    create_engine, Enum as SAEnum,
+    create_engine, Enum as SAEnum, text as sa_text,
 )
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 import enum
@@ -111,6 +111,19 @@ engine = create_engine(
     connect_args={"check_same_thread": False},  # SQLite needs this
     echo=False,
 )
+
+
+def _enable_wal_mode():
+    """Enable WAL mode on SQLite for better concurrent read performance."""
+    with engine.connect() as conn:
+        conn.execute(sa_text("PRAGMA journal_mode=WAL;"))
+        conn.execute(sa_text("PRAGMA busy_timeout=5000;"))
+        conn.execute(sa_text("PRAGMA synchronous=NORMAL;"))
+        conn.commit()
+
+
+# Enable WAL mode on startup
+_enable_wal_mode()
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 

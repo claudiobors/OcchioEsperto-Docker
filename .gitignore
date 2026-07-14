@@ -39,4 +39,5 @@ frontend/dist/
 tmp/
 
 # Docker
-.docker/
+.docker/*.db-shm
+*.db-wal

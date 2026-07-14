@@ -107,13 +107,13 @@ export default function PricingCards() {
             {/* Features */}
             <ul className="space-y-3 mb-8">
               {plan.features.map((feature, i) => (
-                <li key={i} className="flex items-start gap-3">
+                <li key={i} className="flex items-start gap-3 group/feature">
                   {feature.included ? (
-                    <Check className={`w-5 h-5 shrink-0 ${plan.featured ? 'text-vespa-gold-light' : 'text-vespa-green'}`} />
+                    <Check className={`w-5 h-5 shrink-0 mt-0.5 transition-transform duration-200 group-hover/feature:scale-110 ${plan.featured ? 'text-vespa-gold-light' : 'text-vespa-green'}`} />
                   ) : (
-                    <X className={`w-5 h-5 shrink-0 ${plan.featured ? 'text-vespa-cream/40' : 'text-vespa-gray-light'}`} />
+                    <X className={`w-5 h-5 shrink-0 mt-0.5 ${plan.featured ? 'text-vespa-cream/40' : 'text-vespa-gray-light'}`} />
                   )}
-                  <span className={`text-sm ${plan.featured ? 'text-vespa-cream/90' : 'text-vespa-gray'}`}>
+                  <span className={`text-sm transition-colors duration-200 ${plan.featured ? 'text-vespa-cream/90 group-hover/feature:text-white' : 'text-vespa-gray group-hover/feature:text-vespa-black'}`}>
                     {feature.text}
                   </span>
                 </li>
@@ -123,10 +123,10 @@ export default function PricingCards() {
             {/* CTA */}
             <Link
               to={plan.href}
-              className={`block text-center font-medium py-3 px-6 rounded-xl transition-colors ${
+              className={`block text-center font-medium py-3 px-6 rounded-xl transition-all duration-200 ${
                 plan.featured
-                  ? 'bg-white text-vespa-green hover:bg-vespa-cream'
-                  : 'bg-vespa-cream-dark text-vespa-black hover:bg-vespa-cream'
+                  ? 'bg-white text-vespa-green hover:bg-vespa-cream hover:shadow-lg'
+                  : 'bg-vespa-cream-dark text-vespa-black hover:bg-vespa-cream hover:shadow-md'
               }`}
             >
               {plan.cta}

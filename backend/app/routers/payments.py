@@ -10,7 +10,8 @@ import stripe
 from ..database import get_db, User, UserPlan, Payment
 from ..auth import get_current_user
 from ..services.stripe_service import create_checkout_session, verify_webhook_signature
-from ..config import DISCLAIMER
+from ..config import DISCLAIMER, STRIPE_WEBHOOK_SECRET
+from ..services.email_service import send_payment_confirmation
 
 router = APIRouter(prefix="/api/payments", tags=["payments"])
 
@@ -71,7 +72,11 @@ def create_checkout(
 
 @router.post("/webhook")
 async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
-    """Handle Stripe webhook events."""
+    """Handle Stripe webhook events with graceful degradation."""
+    # Graceful degradation: if no webhook secret configured, simulate in dev mode
+    if not STRIPE_WEBHOOK_SECRET:
+        return {"status": "ok", "mode": "development", "message": "Webhook simulation in dev mode"}
+
     payload = await request.body()
     sig_header = request.headers.get("stripe-signature", "")
 
@@ -90,6 +95,7 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
         # Update user plan
         user = db.query(User).filter(User.id == user_id).first()
         if user:
+            old_plan = user.plan.value
             user.plan = UserPlan(plan)
 
             # Update payment record
@@ -101,6 +107,9 @@ async def stripe_webhook(request: Request, db: Session = Depends(get_db)):
                 payment.stripe_payment_intent = session.get("payment_intent")
 
             db.commit()
+
+            # Send confirmation email
+            send_payment_confirmation(user.email, plan, payment.amount if payment else 0)
 
     return {"status": "ok"}
 

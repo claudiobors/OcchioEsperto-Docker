@@ -11,7 +11,9 @@ from sqlalchemy.orm import Session
 from ..database import get_db, User, UserVespa, UserPlan
 from ..auth import get_current_user, get_optional_user
 from ..services.knowledge_base import knowledge_base
-from ..utils import save_upload_file
+from ..services.ai_expert import ai_expert
+from ..utils import save_upload_file, sanitize_string
+from ..services.email_service import send_lead_notification
 from ..config import DISCLAIMER, PLANS
 
 router = APIRouter(prefix="/api/vespa", tags=["vespa"])
@@ -120,6 +122,12 @@ async def identify_vespa(
     """Identify a Vespa model from frame number, engine number, or photo."""
     result = {"disclaimer": DISCLAIMER, "confidence": "low", "match_type": "none"}
 
+    # Sanitize inputs
+    if frame_number:
+        frame_number = sanitize_string(frame_number, max_length=100).upper()
+    if engine_number:
+        engine_number = sanitize_string(engine_number, max_length=100).upper()
+
     matched_model = None
 
     # Try frame number matching first
@@ -202,6 +210,33 @@ def analyze_vespa(
         originality=analysis.get("originality"),
         color_matches=color_matches,
     )
+
+
+@router.post("/ask")
+def ask_ai_expert(
+    question: str = Query(..., description="Domanda sulla Vespa (es. 'colori disponibili', 'prezzi di mercato')"),
+    model_id: int = Query(..., description="ID del modello Vespa"),
+    current_user: User = Depends(get_current_user),
+):
+    """Ask the AI Expert a question about a Vespa model (Avanzato plan only)."""
+    if current_user.plan != UserPlan.AVANZATO:
+        raise HTTPException(
+            status_code=status.HTTP_402_PAYMENT_REQUIRED,
+            detail="La funzione 'Esperto AI' è disponibile solo per il piano Avanzato (€9.99). "
+                   "Vai su /pricing per aggiornare il tuo piano.",
+        )
+
+    model = knowledge_base.get_model_by_id(model_id)
+    if not model:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Modello non trovato")
+
+    # Sanitize question
+    from ..utils import sanitize_string
+    clean_question = sanitize_string(question, max_length=500)
+
+    result = ai_expert.answer_question(clean_question, model_id)
+
+    return result
 
 
 @router.post("/save", response_model=SaveVespaResponse)
@@ -303,5 +338,16 @@ def create_lead(
     db.add(lead)
     db.commit()
     db.refresh(lead)
+
+    # Send lead notification
+    send_lead_notification({
+        "model_name": req.model_name,
+        "year": req.year,
+        "condition": req.condition,
+        "price_asked": req.price_asked,
+        "contact_email": req.contact_email,
+        "contact_phone": req.contact_phone,
+        "description": req.description,
+    })
 
     return LeadResponse(id=lead.id, message="Grazie! La tua richiesta di vendita è stata ricevuta.")

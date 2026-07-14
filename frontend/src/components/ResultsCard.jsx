@@ -11,7 +11,7 @@ export default function ResultsCard({ result, plan = 'free' }) {
   const badge = badges[plan] || badges.free
 
   return (
-    <div className="animate-fade-in-up bg-white rounded-2xl border border-vespa-cream-dark overflow-hidden">
+    <div className="animate-scale-in bg-white rounded-2xl border border-vespa-cream-dark overflow-hidden hover:shadow-md transition-all duration-300">
       {/* Header */}
       <div className="p-6 border-b border-vespa-cream-dark">
         <div className="flex items-center justify-between mb-4">

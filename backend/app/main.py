@@ -8,13 +8,17 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, FileResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from .config import CORS_ORIGINS, RATE_LIMIT_REQUESTS, RATE_LIMIT_WINDOW_SECONDS, UPLOAD_DIR, STATIC_DIR, DISCLAIMER
+from .config import (
+    CORS_ORIGINS, RATE_LIMIT_REQUESTS, RATE_LIMIT_WINDOW_SECONDS,
+    UPLOAD_DIR, STATIC_DIR, DISCLAIMER, IS_PRODUCTION,
+)
 from .database import init_db
 from .routers import auth, vespa, payments, admin
 
@@ -65,12 +69,22 @@ app.add_middleware(
 # --- Middleware ---
 
 @app.middleware("http")
-async def add_disclaimer_header(request: Request, call_next):
-    """Add execution time and CORS headers."""
+async def add_security_headers(request: Request, call_next):
+    """Add security headers to all responses."""
     start_time = time.time()
     response = await call_next(request)
     process_time = time.time() - start_time
+
+    # Security headers
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["X-Process-Time"] = str(process_time)
+
+    # HSTS (HTTP Strict Transport Security) — only in production
+    if IS_PRODUCTION:
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains; preload"
+
     return response
 
 
