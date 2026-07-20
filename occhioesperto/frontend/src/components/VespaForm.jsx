@@ -7,10 +7,10 @@ export default function VespaForm({ onResult }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [formData, setFormData] = useState({
-    telaio: '',
-    motore: '',
-    immatricolazione: '',
-    note: '',
+    frame_number: '',
+    engine_number: '',
+    registration_date: '',
+    notes: '',
   })
   const [photo, setPhoto] = useState(null)
   const [photoPreview, setPhotoPreview] = useState(null)
@@ -38,16 +38,14 @@ export default function VespaForm({ onResult }) {
     try {
       const formPayload = new FormData()
       if (photo) formPayload.append('photo', photo)
-      formPayload.append('frame_number', formData.telaio)
-      formPayload.append('engine_number', formData.motore)
-      if (formData.immatricolazione) {
-        formPayload.append('year', parseInt(formData.immatricolazione.split('-')[0]))
+      formPayload.append('frame_number', formData.frame_number)
+      formPayload.append('engine_number', formData.engine_number)
+      if (formData.registration_date) {
+        formPayload.append('year', parseInt(formData.registration_date.split('-')[0]))
       }
-      if (formData.note) formPayload.append('notes', formData.note)
+      if (formData.notes) formPayload.append('notes', formData.notes)
 
-      const res = await api.post('/vespa/identify', formPayload, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
+      const res = await api.post('/vespa/identify', formPayload)
       onResult?.(res.data)
     } catch (err) {
       setError(err.response?.data?.detail || 'Errore durante l\'analisi. Riprova.')
@@ -57,7 +55,13 @@ export default function VespaForm({ onResult }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      action="/api/vespa/identify"
+      method="post"
+      encType="multipart/form-data"
+      className="space-y-6"
+    >
       {/* Photo Upload */}
       <div>
         <label className="block text-sm font-medium text-vespa-black mb-2">
@@ -101,9 +105,9 @@ export default function VespaForm({ onResult }) {
         </label>
         <input
           type="text"
-          name="telaio"
+          name="frame_number"
           id="telaio"
-          value={formData.telaio}
+          value={formData.frame_number}
           onChange={handleChange}
           placeholder="es. VN1T123456"
           className="w-full px-4 py-3 rounded-xl border border-vespa-cream-dark bg-white focus:border-vespa-green focus:ring-1 focus:ring-vespa-green outline-none transition-colors text-sm"
@@ -118,9 +122,9 @@ export default function VespaForm({ onResult }) {
         </label>
         <input
           type="text"
-          name="motore"
+          name="engine_number"
           id="motore"
-          value={formData.motore}
+          value={formData.engine_number}
           onChange={handleChange}
           placeholder="es. VNM1T123456"
           className="w-full px-4 py-3 rounded-xl border border-vespa-cream-dark bg-white focus:border-vespa-green focus:ring-1 focus:ring-vespa-green outline-none transition-colors text-sm"
@@ -135,24 +139,27 @@ export default function VespaForm({ onResult }) {
         </label>
         <input
           type="date"
-          name="immatricolazione"
+          name="registration_date"
           id="immatricolazione"
-          value={formData.immatricolazione}
+          value={formData.registration_date}
           onChange={handleChange}
           className="w-full px-4 py-3 rounded-xl border border-vespa-cream-dark bg-white focus:border-vespa-green focus:ring-1 focus:ring-vespa-green outline-none transition-colors text-sm"
         />
+        <input
+          type="hidden"
+          name="year"
+          value={formData.registration_date ? formData.registration_date.split('-')[0] : ''}
+        />
       </div>
-
-      {/* Notes */}
       <div>
         <label htmlFor="note" className="block text-sm font-medium text-vespa-black mb-1">
           Note aggiuntive
         </label>
         <textarea
-          name="note"
+          name="notes"
           id="note"
           rows={3}
-          value={formData.note}
+          value={formData.notes}
           onChange={handleChange}
           placeholder="Eventuali dettagli aggiuntivi..."
           className="w-full px-4 py-3 rounded-xl border border-vespa-cream-dark bg-white focus:border-vespa-green focus:ring-1 focus:ring-vespa-green outline-none transition-colors text-sm resize-none"
