@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@theme {
+  --color-vespa-green: #5B7B3A;
+  --color-vespa-green-light: #7BA35A;
+  --color-vespa-green-dark: #3D5A1E;
+  --color-vespa-cream: #F5F0E8;
+  --color-vespa-cream-dark: #E8E0D0;
+  --color-vespa-black: #1A1A1A;
+  --color-vespa-black-light: #2D2D2D;
+  --color-vespa-gold: #C6A44A;
+  --color-vespa-gold-light: #D4B86A;
+  --color-vespa-red: #8B3A3A;
+  --color-vespa-gray: #6B7280;
+  --color-vespa-gray-light: #9CA3AF;
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+/* Base styles */
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-vespa-cream);
+  color: var(--color-vespa-black);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(91, 123, 58, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(91, 123, 58, 0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-fade-in-up-delay-1 {
+  animation: fadeInUp 0.6s ease-out 0.1s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-up-delay-2 {
+  animation: fadeInUp 0.6s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-up-delay-3 {
+  animation: fadeInUp 0.6s ease-out 0.3s forwards;
+  opacity: 0;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.5s ease-out forwards;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-vespa-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-vespa-green);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-vespa-green-dark);
+}
+
+/* Vespa silhouette pattern backgrounds */
+.vespa-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 C35 5 40 10 40 15 L40 20 L45 18 L48 22 L40 25 L40 30 C40 35 35 40 30 40 C25 40 20 35 20 30 L20 25 L12 22 L15 18 L20 20 L20 15 C20 10 25 5 30 5 Z' fill='%235B7B3A' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* Pricing card gradient */
+.pricing-card-gradient {
+  background: linear-gradient(135deg, var(--color-vespa-cream) 0%, #ffffff 100%);
+}
+
+.pricing-card-premium {
+  background: linear-gradient(135deg, var(--color-vespa-green-dark) 0%, var(--color-vespa-green) 100%);
+}
