@@ -1,0 +1,77 @@
+# Fonti dati per il sistema di verifica knowledge base Vespa
+# Solo dati fattuali pubblicamente disponibili — nessun contenuto protetto da copyright
+# Ultimo aggiornamento: 2026-07-07
+
+# === Forum e comunità ===
+# https://www.vespaonline.com/forum/
+#   - Sezioni: "Modelli Vespa", "Numeri telaio e motore", "Restauro e colori"
+#   - Info: discussioni su numeri di serie, colori originali, problemi noti
+# https://www.vespaclubitalia.it/forum/
+#   - Registro storico club Italia
+#   - Info: certificati di origine, numeri telaio, documentazione modelli
+# https://forum.vespa-club.de/
+#   - Forum tedesco, registro europeo
+#   - Info: dati tecnici, documentazione storica
+# https://www.vespaclub.de/technik/
+#   - Sezione tecnica: specifiche motore, cambi, rapporti
+
+# === Registri online ===
+# https://www.scooterhelp.com/vespa/
+#   - Database modelli: numeri telaio, motore, specifiche tecniche
+#   - Info: anni produzione, colori originali, dati di produzione
+# https://www.vespa-register.com/
+#   - Registro internazionale (UK based)
+#   - Info: modelli per anno, codici telaio, statistiche
+# https://www.motovespa.com/models/
+#   - Catalogo modelli Vespa
+#   - Info: schede tecniche, foto, colori per modello
+
+# === Cataloghi e documentazione ===
+# https://www.piaggio.com/it_IT/modelli/vespa/
+#   - Catalogo ufficiale Piaggio (modelli correnti)
+#   - Info: specifiche modelli moderni, prezzi, colori
+# https://www.vespa.com/
+#   - Sito ufficiale globale
+#   - Info: gamma attuale, configurazioni
+# https://www.museopiaggio.it/
+#   - Museo Piaggio (documentazione storica)
+#   - Info: storia dei modelli, design
+
+# === Siti specializzati ===
+# https://www.thisoldvespa.com/
+#   - Manuali di restauro, specifiche tecniche
+#   - Info: parti di ricambio, numeri telaio, colori
+# https://www.vespamaintenance.com/
+#   - Guide manutenzione, specifiche
+#   - Info: dati tecnici modelli classici
+# https://www.beedspeed.com/vespa/
+#   - Parti e accessori UK
+#   - Info: compatibilità ricambi, specifiche modelli
+
+# === Mercato e prezzi ===
+# https://www.subito.it/
+#   - Annunci vendita: stime prezzi mercato attuali
+# https://www.autoscout24.it/
+#   - Annunci: quotazioni modelli moderni
+# https://www.mobile.de/
+#   - Mercato tedesco: quotazioni
+# https://www.bonhams.com/
+#   - Aste moto d'epoca: stime modelli rari (98, GS, SS)
+# https://www.ebay.it/sch/i.html?_nkw=vespa
+#   - Aste e vendite: prezzi di mercato
+
+# === Specifiche tecniche ===
+# https://www.motorcyclespecs.co.za/
+#   - Specifiche tecniche moto/scooter
+#   - Info: pesi, velocità, potenza
+# https://www.bikez.com/
+#   - Database moto: specifiche per modello
+#   - Info: anni, pesi, cilindrate
+
+# === Colori e finiture ===
+# https://www.vespapaintcolors.com/
+#   - Database colori originali per modello/anno
+#   - Info: codici colore, codici HEX, denominazioni Piaggio
+# https://www.colorrite.com/
+#   - Color matching per restauro
+#   - Info: codici colore Piaggio, vernici corrispondenti
