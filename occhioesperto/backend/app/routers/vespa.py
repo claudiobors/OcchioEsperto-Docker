@@ -18,6 +18,7 @@ from ..utils import absolute_upload_path, extract_dominant_hex, save_upload_file
 from ..config import DISCLAIMER
 
 router = APIRouter(prefix="/api/vespa", tags=["vespa"])
+legacy_router = APIRouter(tags=["legacy-vespa"])
 
 
 class ModelResponse(BaseModel):
@@ -237,6 +238,42 @@ async def identify_vespa(
 
     result["recommendations"] = _recommendations(result)
     return IdentifyResponse(**result)
+
+
+@legacy_router.post("/vespa/identify", response_model=IdentifyResponse)
+@legacy_router.post("/analisi", response_model=IdentifyResponse)
+async def identify_vespa_legacy_form(
+    frame_number: Optional[str] = Form(None),
+    engine_number: Optional[str] = Form(None),
+    year: Optional[int] = Form(None),
+    notes: Optional[str] = Form(None),
+    photo: Optional[UploadFile] = File(None),
+    telaio: Optional[str] = Form(None),
+    motore: Optional[str] = Form(None),
+    immatricolazione: Optional[str] = Form(None),
+    note: Optional[str] = Form(None),
+    current_user: Optional[User] = Depends(get_optional_user),
+):
+    """Compatibility endpoint for old frontend builds/native form submits.
+
+    Older bundles posted to /analisi or /vespa/identify and used Italian field names.
+    Keep these routes POST-capable so stale browser caches/VPS builds do not surface 405.
+    """
+    parsed_year = year
+    if parsed_year is None and immatricolazione:
+        try:
+            parsed_year = int(str(immatricolazione).split("-")[0])
+        except (TypeError, ValueError):
+            parsed_year = None
+
+    return await identify_vespa(
+        frame_number=frame_number or telaio,
+        engine_number=engine_number or motore,
+        year=parsed_year,
+        notes=notes or note,
+        photo=photo,
+        current_user=current_user,
+    )
 
 
 @router.post("/analyze", response_model=AnalysisResponse)

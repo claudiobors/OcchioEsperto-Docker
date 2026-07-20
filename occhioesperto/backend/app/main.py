@@ -94,6 +94,7 @@ async def catch_exceptions(request: Request, call_next):
 
 app.include_router(auth.router)
 app.include_router(vespa.router)
+app.include_router(vespa.legacy_router)
 app.include_router(payments.router)
 app.include_router(admin.router)
 
