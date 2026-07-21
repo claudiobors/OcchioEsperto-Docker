@@ -1,13 +1,15 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { Loader2, UserPlus, AlertCircle, Eye, EyeOff } from 'lucide-react'
 
 export default function Register() {
-  const { register } = useAuth()
+  const { register, api } = useAuth()
   const { addToast } = useToast()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const selectedPlan = ['intermedio', 'avanzato'].includes(searchParams.get('plan')) ? searchParams.get('plan') : ''
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -22,7 +24,7 @@ export default function Register() {
     if (!email) newErrors.email = 'Inserisci la tua email'
     else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email non valida'
     if (!password) newErrors.password = 'Inserisci una password'
-    else if (password.length < 6) newErrors.password = 'Minimo 6 caratteri'
+    else if (password.length < 8) newErrors.password = 'Minimo 8 caratteri'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -33,7 +35,19 @@ export default function Register() {
     if (!validate()) return
     setLoading(true)
     try {
-      await register({ name, email, password })
+      const auth = await register({ name, email, password })
+      if (selectedPlan) {
+        addToast('Account creato. Ora completi il pagamento sicuro della scheda.', 'success')
+        const res = await api.post('/payments/create-checkout', {
+          plan: selectedPlan,
+          success_url: `${window.location.origin}/dashboard?payment=success`,
+          cancel_url: `${window.location.origin}/pricing?payment=cancelled`,
+        }, {
+          headers: { Authorization: `Bearer ${auth.access_token}` },
+        })
+        window.location.href = res.data.session_url
+        return
+      }
       addToast('Registrazione completata! Benvenuto su OcchioEsperto.', 'success')
       navigate('/dashboard')
     } catch (err) {
@@ -58,8 +72,16 @@ export default function Register() {
             <UserPlus className="w-7 h-7 text-vespa-green" />
           </div>
           <h1 className="font-heading text-3xl font-bold text-vespa-black">Registrati</h1>
-          <p className="text-vespa-gray text-sm mt-2">Crea il tuo garage digitale gratuito.</p>
+          <p className="text-vespa-gray text-sm mt-2">
+            {selectedPlan ? 'Prima creiamo il tuo account, poi passerai al pagamento sicuro Stripe.' : 'Crea il tuo garage digitale gratuito.'}
+          </p>
         </div>
+
+        {selectedPlan && (
+          <div className="mb-5 rounded-2xl border border-vespa-green/20 bg-vespa-green/5 p-4 text-sm leading-6 text-vespa-gray">
+            <strong className="text-vespa-black">Flusso chiaro:</strong> registrazione obbligatoria → consenso e credenziali → pagamento → scheda completa salvata nel garage.
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-vespa-cream-dark p-8 space-y-5">
           <div>
@@ -107,8 +129,8 @@ export default function Register() {
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({...p, password: ''})) }}
                 required
-                minLength={6}
-                placeholder="Minimo 6 caratteri"
+                minLength={8}
+                placeholder="Minimo 8 caratteri"
                 className={inputClass('password')}
               />
               <button
@@ -127,8 +149,8 @@ export default function Register() {
             )}
             <p className="text-xs text-vespa-gray-light mt-1">
               {password.length > 0 && (
-                <span className={password.length >= 6 ? 'text-vespa-green' : 'text-vespa-gold'}>
-                  {password.length >= 6 ? '✓ Password valida' : `• Ancora ${6 - password.length} caratteri`}
+                <span className={password.length >= 8 ? 'text-vespa-green' : 'text-vespa-gold'}>
+                  {password.length >= 8 ? '✓ Password valida' : `• Ancora ${8 - password.length} caratteri`}
                 </span>
               )}
             </p>

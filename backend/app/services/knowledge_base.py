@@ -60,92 +60,27 @@ class KnowledgeBase:
         conn.close()
         return dict(row) if row else None
 
-    def identify_by_frame_number(self, frame_number: str) -> Optional[Dict[str, Any]]:
-        """Match frame number to model using number ranges."""
-        conn = self._get_connection()
-        cursor = conn.cursor()
+    def identify_by_frame_number(self, frame_number: str, year: Optional[int] = None) -> Optional[Dict[str, Any]]:
+        """Match frame number to model using strict prefix-aware scoring."""
+        return self._identify_by_number_range(
+            table="vespa_chassis_numbers",
+            number=frame_number,
+            year=year,
+            match_type="frame_number",
+            start_alias="number_start",
+            end_alias="number_end",
+        )
 
-        # Extract numeric part from frame number (e.g., "VLA12345" -> 12345)
-        numeric_part = self._extract_numeric(frame_number)
-        alpha_prefix = self._extract_alpha_prefix(frame_number)
-
-        if numeric_part is not None:
-            # Try numeric range matching
-            cursor.execute("""
-                SELECT c.model_id, c.number_start, c.number_end, c.year_start, c.year_end,
-                       m.name as model_name, m.slug as model_slug, m.production_start, m.production_end,
-                       m.displacement_cc as engine_cc
-                FROM vespa_chassis_numbers c
-                JOIN vespa_models m ON c.model_id = m.id
-                WHERE CAST(? AS INTEGER) BETWEEN CAST(REPLACE(REPLACE(c.number_start, 'V', ''), 'P', '') AS INTEGER)
-                                             AND CAST(REPLACE(REPLACE(c.number_end, 'V', ''), 'P', '') AS INTEGER)
-                   OR ? LIKE '%' || c.number_start || '%'
-                LIMIT 1
-            """, (numeric_part, frame_number))
-
-        if alpha_prefix:
-            # Try prefix matching (e.g., "VLA" matches Sprint)
-            cursor.execute("""
-                SELECT c.model_id, c.number_start, c.number_end, c.year_start, c.year_end,
-                       m.name as model_name, m.slug as model_slug, m.production_start, m.production_end,
-                       m.displacement_cc as engine_cc
-                FROM vespa_chassis_numbers c
-                JOIN vespa_models m ON c.model_id = m.id
-                WHERE (c.number_start LIKE ? || '%' OR ? LIKE c.number_start || '%')
-                LIMIT 1
-            """, (alpha_prefix, frame_number))
-
-        # Fallback: search by pattern in frame number string
-        cursor.execute("""
-            SELECT c.model_id, c.number_start, c.number_end, c.year_start, c.year_end,
-                   m.name as model_name, m.slug as model_slug, m.production_start, m.production_end,
-                   m.displacement_cc as engine_cc
-            FROM vespa_chassis_numbers c
-            JOIN vespa_models m ON c.model_id = m.id
-            WHERE ? LIKE '%' || c.number_start || '%'
-               OR c.number_start LIKE '%' || ? || '%'
-            LIMIT 1
-        """, (frame_number, frame_number[:4]))
-
-        row = cursor.fetchone()
-        conn.close()
-
-        if row:
-            result = dict(row)
-            result['match_type'] = 'frame_number'
-            result['confidence'] = 'high'
-            return result
-        return None
-
-    def identify_by_engine_number(self, engine_number: str) -> Optional[Dict[str, Any]]:
-        """Match engine number to model."""
-        conn = self._get_connection()
-        cursor = conn.cursor()
-
-        cursor.execute("""
-            SELECT e.model_id,
-                   e.number_start as engine_number_start,
-                   e.number_end as engine_number_end,
-                   e.year_start, e.year_end,
-                   m.name as model_name, m.slug as model_slug, m.production_start, m.production_end,
-                   m.displacement_cc as engine_cc
-            FROM vespa_engine_numbers e
-            JOIN vespa_models m ON e.model_id = m.id
-            WHERE ? LIKE '%' || e.number_start || '%'
-               OR ? LIKE '%' || e.number_end || '%'
-               OR e.number_start LIKE '%' || ? || '%'
-            LIMIT 1
-        """, (engine_number, engine_number, engine_number[:4]))
-
-        row = cursor.fetchone()
-        conn.close()
-
-        if row:
-            result = dict(row)
-            result['match_type'] = 'engine_number'
-            result['confidence'] = 'high'
-            return result
-        return None
+    def identify_by_engine_number(self, engine_number: str, year: Optional[int] = None) -> Optional[Dict[str, Any]]:
+        """Match engine number to model using strict prefix-aware scoring."""
+        return self._identify_by_number_range(
+            table="vespa_engine_numbers",
+            number=engine_number,
+            year=year,
+            match_type="engine_number",
+            start_alias="engine_number_start",
+            end_alias="engine_number_end",
+        )
 
     def get_colors_for_model(self, model_id: int) -> List[Dict[str, Any]]:
         """Get historical colors for a model."""
@@ -360,11 +295,111 @@ class KnowledgeBase:
         conn.close()
         return [dict(r) for r in rows]
 
+
+    def _identify_by_number_range(
+        self,
+        table: str,
+        number: str,
+        year: Optional[int],
+        match_type: str,
+        start_alias: str,
+        end_alias: str,
+    ) -> Optional[Dict[str, Any]]:
+        """Return the best prefix-aware range match without GS-like fall-through defaults."""
+        normalized = self._normalize_number(number)
+        numeric_part = self._extract_numeric(normalized)
+        input_prefix = self._extract_code_prefix(normalized)
+        if not normalized:
+            return None
+
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute(f"""
+            SELECT n.model_id, n.number_start, n.number_end, n.year_start, n.year_end, n.notes,
+                   m.name as model_name, m.slug as model_slug, m.production_start, m.production_end,
+                   m.displacement_cc as engine_cc
+            FROM {table} n
+            JOIN vespa_models m ON n.model_id = m.id
+        """)
+        rows = [dict(r) for r in cursor.fetchall()]
+        conn.close()
+
+        candidates = []
+        for row in rows:
+            score = self._score_number_row(row, normalized, numeric_part, input_prefix, year)
+            if score <= 0:
+                continue
+            row[start_alias] = row["number_start"]
+            row[end_alias] = row["number_end"]
+            row["match_type"] = match_type
+            row["confidence"] = "high" if score >= 90 else "medium" if score >= 55 else "low"
+            row["match_score"] = score
+            candidates.append(row)
+
+        if not candidates:
+            return None
+        candidates.sort(key=lambda r: (-r["match_score"], r["production_start"], r["model_name"]))
+        return candidates[0]
+
+    def _score_number_row(
+        self,
+        row: Dict[str, Any],
+        normalized: str,
+        numeric_part: Optional[int],
+        input_prefix: str,
+        year: Optional[int],
+    ) -> int:
+        start = self._normalize_number(row.get("number_start") or "")
+        end = self._normalize_number(row.get("number_end") or "")
+        notes = self._normalize_number(row.get("notes") or "")
+        start_prefix = self._extract_code_prefix(start)
+        end_prefix = self._extract_code_prefix(end)
+        start_num = self._extract_numeric(start)
+        end_num = self._extract_numeric(end)
+        row_has_prefix = bool(start_prefix or end_prefix)
+        score = 0
+
+        if row_has_prefix:
+            prefixes = [p for p in [start_prefix, end_prefix] if p]
+            if input_prefix and any(normalized.startswith(p) or p.startswith(input_prefix) for p in prefixes):
+                score = 80
+            else:
+                return 0
+        elif start_num is not None and end_num is not None and numeric_part is not None:
+            note_prefix_match = input_prefix and input_prefix in notes
+            if input_prefix and not note_prefix_match:
+                return 0
+            if start_num <= numeric_part <= end_num:
+                score = 65 if not input_prefix else 88
+        elif start and start in normalized:
+            score = 45
+
+        if score and year:
+            if row.get("year_start") and row.get("year_end") and row["year_start"] <= year <= row["year_end"]:
+                score += 12
+            else:
+                score -= 18
+        return max(score, 0)
+
     @staticmethod
     def _extract_numeric(s: str) -> Optional[int]:
         """Extract numeric value from a string like 'VLA12345'."""
         numbers = re.findall(r'\d+', s)
         return int(numbers[-1]) if numbers else None
+
+    @staticmethod
+    def _normalize_number(s: str) -> str:
+        """Normalize stamped frame/engine numbers for comparisons."""
+        return re.sub(r'[^A-Z0-9]', '', (s or '').upper())
+
+    @staticmethod
+    def _extract_code_prefix(s: str) -> str:
+        """Extract Vespa-style prefix before the long serial, e.g. VLA1T from VLA1T123456."""
+        match = re.match(r'^([A-Z0-9]*[TM])\d*$', s or '')
+        if match:
+            return match.group(1)
+        match = re.match(r'^([A-Z]+\d*)', s or '')
+        return match.group(1) if match else ""
 
     @staticmethod
     def _extract_alpha_prefix(s: str) -> str:

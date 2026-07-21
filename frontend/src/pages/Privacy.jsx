@@ -12,7 +12,7 @@ export default function Privacy() {
             Privacy Policy
           </h1>
           <p className="text-vespa-gray text-sm">
-            Ultimo aggiornamento: Giugno 2026
+            Ultimo aggiornamento: Luglio 2026
           </p>
         </div>
 
@@ -42,7 +42,7 @@ export default function Privacy() {
                 <Eye className="w-5 h-5 text-vespa-green shrink-0 mt-0.5" />
                 <div>
                   <h3 className="font-semibold text-vespa-black text-sm">Dati delle Analisi</h3>
-                  <p className="text-xs text-vespa-gray">Numeri di telaio, motore, foto e descrizioni delle Vespa inserite dall'utente.</p>
+                  <p className="text-xs text-vespa-gray">Numeri di telaio, motore, anno, foto e note inserite dall'utente. Per le schede complete sono collegati all'account.</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -62,7 +62,8 @@ export default function Privacy() {
             </p>
             <ul className="list-disc pl-5 mt-3 space-y-2 text-sm text-vespa-gray">
               <li>Fornire il servizio di identificazione e analisi delle Vespa;</li>
-              <li>Migliorare l'accuratezza degli algoritmi di analisi (dati aggregati e anonimi);</li>
+              <li>Inviare, solo quando necessario, dati tecnici minimizzati a provider AI esterni configurati tramite OpenRouter per ottenere una valutazione esperta;</li>
+              <li>Migliorare l'accuratezza del database con dati aggregati, pseudonimizzati o sottoposti a revisione manuale;</li>
               <li>Gestire pagamenti e fatture tramite Stripe;</li>
               <li>Comunicare con l'utente in merito al servizio richiesto;</li>
               <li>Rispettare obblighi di legge.</li>
@@ -74,6 +75,13 @@ export default function Privacy() {
             <p className="text-sm text-vespa-gray leading-relaxed">
               Il trattamento dei dati è basato sul consenso dell'utente (art. 6 par. 1 lett. a GDPR)
               e sull'esecuzione del contratto di servizio (art. 6 par. 1 lett. b GDPR).
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-heading text-xl font-bold text-vespa-black mb-4">4-bis. AI esterna e minimizzazione</h2>
+            <p className="text-sm text-vespa-gray leading-relaxed">
+              Le valutazioni AI possono essere elaborate tramite OpenRouter e i modelli configurati dal servizio. Non inviamo password o dati di pagamento; inviamo solo gli elementi tecnici utili all'analisi, come prefissi telaio/motore, anno, note e, se caricata, la foto necessaria al riconoscimento. Le risposte AI sono supporto informativo e vengono presentate con livello di confidenza e controlli consigliati.
             </p>
           </section>
 

@@ -89,6 +89,7 @@ export default function VespaForm({ onResult }) {
       if (photo) formPayload.append('photo', photo)
       if (formData.telaio) formPayload.append('frame_number', formData.telaio)
       if (formData.motore) formPayload.append('engine_number', formData.motore)
+      if (formData.note) formPayload.append('notes', formData.note)
       if (formData.immatricolazione) {
         formPayload.append('year', new Date(formData.immatricolazione).getFullYear().toString())
       }

@@ -12,7 +12,7 @@ export default function Terms() {
             Termini di Servizio
           </h1>
           <p className="text-vespa-gray text-sm">
-            Ultimo aggiornamento: Giugno 2026
+            Ultimo aggiornamento: Luglio 2026
           </p>
         </div>
 
@@ -26,8 +26,7 @@ export default function Terms() {
                 <p className="text-sm text-vespa-gray leading-relaxed">
                   Questo servizio offre un'analisi basata su dati storici per supportare appassionati e restauratori.
                   Non costituisce un certificato ufficiale di origine e non è affiliato in alcun modo al Gruppo Piaggio.
-                  Le nostre analisi si basano sulle più moderne conoscenze di intelligenza artificiale, addestrate da
-                  massimi esperti del settore.
+                  Le nostre analisi combinano database storico, controlli algoritmici e, quando configurata, AI esterna tramite OpenRouter.
                 </p>
               </div>
             </div>
@@ -89,13 +88,22 @@ export default function Terms() {
             <h2 className="font-heading text-xl font-bold text-vespa-black mb-4">6. Pagamenti e Rimborsi</h2>
             <p className="text-sm text-vespa-gray leading-relaxed">
               I pagamenti per i piani a pagamento vengono processati tramite Stripe. Ogni analisi viene
-              acquistata singolarmente (nessun abbonamento ricorrente). Una volta completata l'analisi,
-              il pagamento non è rimborsabile in quanto il servizio digitale viene erogato immediatamente.
+              acquistata singolarmente (nessun abbonamento ricorrente). Prima di acquistare una scheda completa
+              è richiesta la registrazione: così l'analisi, il consenso privacy e la ricevuta restano collegati
+              all'account dell'utente. Una volta completata l'analisi, il pagamento non è rimborsabile in quanto
+              il servizio digitale viene erogato immediatamente.
             </p>
           </section>
 
           <section>
-            <h2 className="font-heading text-xl font-bold text-vespa-black mb-4">7. Modifiche ai Termini</h2>
+            <h2 className="font-heading text-xl font-bold text-vespa-black mb-4">7. Fonti storiche e arricchimento dati</h2>
+            <p className="text-sm text-vespa-gray leading-relaxed">
+              Il database può essere arricchito con fonti pubbliche specialistiche, registri storici, materiale tecnico e contributi sottoposti a revisione. Conserviamo dati fattuali come modelli, anni, range telaio/motore e colori, con attribuzione della fonte quando disponibile; non repubblichiamo contenuti protetti o testi integrali di terzi.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="font-heading text-xl font-bold text-vespa-black mb-4">8. Modifiche ai Termini</h2>
             <p className="text-sm text-vespa-gray leading-relaxed">
               Ci riserviamo il diritto di modificare questi termini in qualsiasi momento. Le modifiche
               saranno comunicate tramite aggiornamento di questa pagina. L'uso continuato del Servizio

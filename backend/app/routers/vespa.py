@@ -41,8 +41,11 @@ class IdentifyRequest(BaseModel):
 class IdentifyResponse(BaseModel):
     model: Optional[dict] = None
     identification: Optional[dict] = None
+    expert_analysis: Optional[dict] = None
     confidence: str = "low"
     match_type: str = "none"
+    plan: str = "free"
+    requires_registration_for_full_report: bool = True
     disclaimer: str = DISCLAIMER
 
 
@@ -116,23 +119,34 @@ async def identify_vespa(
     frame_number: Optional[str] = Form(None),
     engine_number: Optional[str] = Form(None),
     year: Optional[int] = Form(None),
+    notes: Optional[str] = Form(None),
     photo: Optional[UploadFile] = File(None),
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Identify a Vespa model from frame number, engine number, or photo."""
-    result = {"disclaimer": DISCLAIMER, "confidence": "low", "match_type": "none"}
+    plan = current_user.plan.value if current_user else UserPlan.FREE.value
+    result = {
+        "disclaimer": DISCLAIMER,
+        "confidence": "low",
+        "match_type": "none",
+        "plan": plan,
+        "requires_registration_for_full_report": current_user is None,
+    }
 
     # Sanitize inputs
     if frame_number:
         frame_number = sanitize_string(frame_number, max_length=100).upper()
     if engine_number:
         engine_number = sanitize_string(engine_number, max_length=100).upper()
+    if notes:
+        notes = sanitize_string(notes, max_length=600)
 
     matched_model = None
+    match = None
 
     # Try frame number matching first
     if frame_number:
-        match = knowledge_base.identify_by_frame_number(frame_number)
+        match = knowledge_base.identify_by_frame_number(frame_number, year=year)
         if match:
             matched_model = {
                 "id": match["model_id"],
@@ -148,7 +162,7 @@ async def identify_vespa(
 
     # Try engine number if frame didn't match
     if not matched_model and engine_number:
-        match = knowledge_base.identify_by_engine_number(engine_number)
+        match = knowledge_base.identify_by_engine_number(engine_number, year=year)
         if match:
             matched_model = {
                 "id": match["model_id"],
@@ -174,6 +188,27 @@ async def identify_vespa(
             "years": f"{matched_model['production_start']} - {matched_model['production_end'] or 'oggi'}",
             "engine_cc": matched_model["engine_cc"],
         }
+
+    should_use_ai = bool(photo_path or notes or not matched_model or result["confidence"] != "high")
+    if should_use_ai:
+        expert = ai_expert.enrich_identification(
+            frame_number=frame_number,
+            engine_number=engine_number,
+            year=year,
+            notes=notes,
+            deterministic_match=match if matched_model else None,
+            photo_uploaded=bool(photo_path),
+        )
+        result["expert_analysis"] = expert
+        result["confidence"] = expert.get("confidence", result["confidence"])
+    elif matched_model:
+        result["expert_analysis"] = ai_expert.enrich_identification(
+            frame_number=frame_number,
+            engine_number=engine_number,
+            year=year,
+            deterministic_match=match,
+            photo_uploaded=False,
+        )
 
     return IdentifyResponse(**result)
 

@@ -50,6 +50,16 @@ class WebScraper:
 
     # Known reliable sources for factual Vespa data
     SOURCES = {
+        "vespaforever": {
+            "url": "https://www.vespaforever.net/",
+            "name": "VespaForever",
+            "type": "registry",
+        },
+        "registrostorico_vespa": {
+            "url": "https://www.registrostoricovespa.it/",
+            "name": "Registro Storico Vespa",
+            "type": "registry",
+        },
         "scooterhelp": {
             "url": "https://www.scooterhelp.com/vespa/",
             "name": "ScooterHelp Vespa Database",

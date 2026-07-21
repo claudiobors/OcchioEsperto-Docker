@@ -1,0 +1,406 @@
+[
+  {
+    "source_url": "https://www.vespaforever.net/",
+    "success": true,
+    "error": null,
+    "data_points_count": 9,
+    "data_points": [
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa 125 Super",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.302151"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "VESPA 50",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.302151"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa 98cc",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.302151"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa 125",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.302151"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa 98",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.302151"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa 125cc",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.302151"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "production_years",
+        "field_value": "2000 - 2021",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.304145"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "frame_range",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "number",
+        "field_value": "VMA",
+        "confidence": "low",
+        "scraped_at": "2026-07-21T10:54:04.305145"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "color",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "color",
+        "field_value": "otore, meccanica, carrozzeria Colori originali Piaggio Vespa Vespa foto live.. D",
+        "confidence": "low",
+        "scraped_at": "2026-07-21T10:54:04.307112"
+      }
+    ],
+    "timestamp": "2026-07-21T10:54:04.308110"
+  },
+  {
+    "source_url": "https://www.vespaforever.net/",
+    "success": true,
+    "error": null,
+    "data_points_count": 9,
+    "data_points": [
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa 125 Super",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.302151"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "VESPA 50",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.302151"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa 98cc",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.302151"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa 125",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.302151"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa 98",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.302151"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa 125cc",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.302151"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "production_years",
+        "field_value": "2000 - 2021",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:04.304145"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "frame_range",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "number",
+        "field_value": "VMA",
+        "confidence": "low",
+        "scraped_at": "2026-07-21T10:54:04.305145"
+      },
+      {
+        "source_url": "https://www.vespaforever.net/",
+        "source_name": "VespaForever",
+        "data_type": "color",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "color",
+        "field_value": "otore, meccanica, carrozzeria Colori originali Piaggio Vespa Vespa foto live.. D",
+        "confidence": "low",
+        "scraped_at": "2026-07-21T10:54:04.307112"
+      }
+    ],
+    "timestamp": "2026-07-21T10:54:04.308110"
+  },
+  {
+    "source_url": "https://www.registrostoricovespa.it/",
+    "success": true,
+    "error": null,
+    "data_points_count": 1,
+    "data_points": [
+      {
+        "source_url": "https://www.registrostoricovespa.it/",
+        "source_name": "Registro Storico Vespa",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "production_years",
+        "field_value": "2014-2024",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:05.001690"
+      }
+    ],
+    "timestamp": "2026-07-21T10:54:05.001690"
+  },
+  {
+    "source_url": "https://www.registrostoricovespa.it/",
+    "success": true,
+    "error": null,
+    "data_points_count": 1,
+    "data_points": [
+      {
+        "source_url": "https://www.registrostoricovespa.it/",
+        "source_name": "Registro Storico Vespa",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "production_years",
+        "field_value": "2014-2024",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:05.001690"
+      }
+    ],
+    "timestamp": "2026-07-21T10:54:05.001690"
+  },
+  {
+    "source_url": "https://www.scooterhelp.com/vespa/",
+    "success": false,
+    "error": "Client error '404 Not Found' for url 'https://www.scooterhelp.com/vespa/'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404",
+    "data_points_count": 0,
+    "data_points": [],
+    "timestamp": "2026-07-21T10:54:06.376565"
+  },
+  {
+    "source_url": "https://www.vespapaintcolors.com/",
+    "success": false,
+    "error": "[Errno 11001] getaddrinfo failed",
+    "data_points_count": 0,
+    "data_points": [],
+    "timestamp": "2026-07-21T10:54:06.436088"
+  },
+  {
+    "source_url": "https://www.motorcyclespecs.co.za/",
+    "success": true,
+    "error": null,
+    "data_points_count": 3,
+    "data_points": [
+      {
+        "source_url": "https://www.motorcyclespecs.co.za/",
+        "source_name": "Motorcycle Specs",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa Primavera 125",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:07.592236"
+      },
+      {
+        "source_url": "https://www.motorcyclespecs.co.za/",
+        "source_name": "Motorcycle Specs",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa GTS 310",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:07.592236"
+      },
+      {
+        "source_url": "https://www.motorcyclespecs.co.za/",
+        "source_name": "Motorcycle Specs",
+        "data_type": "color",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "color",
+        "field_value": "will bring more than just new colors�. BMW K 1600 GT , GTL , Bagger & Grand Amer",
+        "confidence": "low",
+        "scraped_at": "2026-07-21T10:54:07.592236"
+      }
+    ],
+    "timestamp": "2026-07-21T10:54:07.592236"
+  },
+  {
+    "source_url": "https://www.motorcyclespecs.co.za/",
+    "success": true,
+    "error": null,
+    "data_points_count": 3,
+    "data_points": [
+      {
+        "source_url": "https://www.motorcyclespecs.co.za/",
+        "source_name": "Motorcycle Specs",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa Primavera 125",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:07.592236"
+      },
+      {
+        "source_url": "https://www.motorcyclespecs.co.za/",
+        "source_name": "Motorcycle Specs",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "model_name",
+        "field_value": "Vespa GTS 310",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:07.592236"
+      },
+      {
+        "source_url": "https://www.motorcyclespecs.co.za/",
+        "source_name": "Motorcycle Specs",
+        "data_type": "color",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "color",
+        "field_value": "will bring more than just new colors�. BMW K 1600 GT , GTL , Bagger & Grand Amer",
+        "confidence": "low",
+        "scraped_at": "2026-07-21T10:54:07.592236"
+      }
+    ],
+    "timestamp": "2026-07-21T10:54:07.592236"
+  },
+  {
+    "source_url": "https://bikez.com/motorcycles/vespa.php",
+    "success": true,
+    "error": null,
+    "data_points_count": 1,
+    "data_points": [
+      {
+        "source_url": "https://bikez.com/motorcycles/vespa.php",
+        "source_name": "Bikez Vespa Models",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "production_years",
+        "field_value": "1999-2025",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:08.167225"
+      }
+    ],
+    "timestamp": "2026-07-21T10:54:08.168259"
+  },
+  {
+    "source_url": "https://bikez.com/motorcycles/vespa.php",
+    "success": true,
+    "error": null,
+    "data_points_count": 1,
+    "data_points": [
+      {
+        "source_url": "https://bikez.com/motorcycles/vespa.php",
+        "source_name": "Bikez Vespa Models",
+        "data_type": "model",
+        "model_slug": null,
+        "model_name": null,
+        "field_name": "production_years",
+        "field_value": "1999-2025",
+        "confidence": "medium",
+        "scraped_at": "2026-07-21T10:54:08.167225"
+      }
+    ],
+    "timestamp": "2026-07-21T10:54:08.168259"
+  },
+  {
+    "source_url": "https://www.thisoldvespa.com/",
+    "success": false,
+    "error": "[Errno 11001] getaddrinfo failed",
+    "data_points_count": 0,
+    "data_points": [],
+    "timestamp": "2026-07-21T10:54:08.224811"
+  }
+]

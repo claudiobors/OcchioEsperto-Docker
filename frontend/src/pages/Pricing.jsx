@@ -2,8 +2,8 @@ import PricingCards from '../components/PricingCards'
 import { Sparkles, HelpCircle } from 'lucide-react'
 
 const faqs = [
-  ['Come funziona il pagamento?', 'Paghi solo per ogni analisi effettuata. Il piano Base resta gratuito per una prima identificazione modello e anno.'],
-  ['Posso salvare le analisi?', 'Sì. Registrandoti puoi conservare le tue schede nel garage digitale e consultarle quando vuoi.'],
+  ['Come funziona il pagamento?', 'Per le schede complete prima crei un account, poi vai al pagamento sicuro Stripe. Così credenziali, consenso e scheda restano collegati al tuo garage.'],
+  ['Posso salvare le analisi?', 'Sì. Le schede complete richiedono registrazione: potrai conservarle nel garage digitale e consultarle quando vuoi.'],
   ['Sostituisce un certificato ufficiale?', 'No. È un supporto basato su dati storici e AI: utile per orientarti, non un certificato di origine Piaggio.'],
   ['Come funziona la vendita?', 'La richiesta “Vendi la tua Vespa” raccoglie i dettagli e ti mette in contatto con potenziali acquirenti o supporto dedicato.'],
 ]
@@ -22,7 +22,7 @@ export default function Pricing() {
             Scegli quanto in profondità vuoi andare.
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-vespa-cream/72">
-            Gratis per iniziare, piani a pagamento solo quando ti servono schede tecniche, originalità e valore di mercato.
+            Gratis per iniziare. Per la scheda completa ti registri prima, poi paghi in modo sicuro: flusso chiaro, GDPR e dati sotto controllo.
           </p>
         </div>
       </section>

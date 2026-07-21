@@ -23,7 +23,7 @@ const plans = [
     name: 'Intermedio',
     price: '4,99 €',
     period: 'per analisi',
-    description: 'La scheda tecnica che serve davvero.',
+    description: 'Registrazione prima del pagamento, poi scheda tecnica.',
     features: [
       { text: 'Identificazione modello + anno', included: true },
       { text: 'Range numeri telaio/motore', included: true },
@@ -32,7 +32,7 @@ const plans = [
       { text: 'Stima prezzi di mercato', included: false },
       { text: 'Garage digitale', included: true },
     ],
-    cta: 'Scegli Intermedio',
+    cta: 'Registrati e paga Intermedio',
     href: '/register?plan=intermedio',
     featured: true,
   },
@@ -40,7 +40,7 @@ const plans = [
     name: 'Premium',
     price: '9,99 €',
     period: 'per analisi',
-    description: 'Per comprare, vendere o restaurare meglio.',
+    description: 'Esperto AI OpenRouter, colori, originalità e mercato.',
     features: [
       { text: 'Identificazione modello + anno', included: true },
       { text: 'Range numeri telaio/motore', included: true },
@@ -49,8 +49,8 @@ const plans = [
       { text: 'Checklist originalità + problemi', included: true },
       { text: 'Stima prezzi di mercato', included: true },
     ],
-    cta: 'Scegli Premium',
-    href: '/register?plan=premium',
+    cta: 'Registrati e paga Premium',
+    href: '/register?plan=avanzato',
     featured: false,
   },
 ]
