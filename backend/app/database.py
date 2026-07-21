@@ -52,6 +52,7 @@ class UserVespa(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    display_name = Column(String(255), nullable=True)
     model_id = Column(Integer, nullable=True)
     model_name = Column(String(255), nullable=False)
     model_slug = Column(String(255), nullable=True)
@@ -62,6 +63,8 @@ class UserVespa(Base):
     color_hex = Column(String(7), nullable=True)
     notes = Column(Text, nullable=True)
     photo_path = Column(String(500), nullable=True)
+    analysis_level = Column(String(50), default="basic")
+    pro_report_path = Column(String(500), nullable=True)
     analysis_json = Column(Text, nullable=True)  # JSON with full analysis
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
@@ -131,6 +134,22 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def init_db():
     """Create all tables in the app database."""
     Base.metadata.create_all(bind=engine)
+    _ensure_user_vespe_columns()
+
+
+def _ensure_user_vespe_columns():
+    """Lightweight SQLite migration for garage features on existing installs."""
+    with engine.connect() as conn:
+        columns = {row[1] for row in conn.execute(sa_text("PRAGMA table_info(user_vespe);"))}
+        migrations = {
+            "display_name": "ALTER TABLE user_vespe ADD COLUMN display_name VARCHAR(255)",
+            "analysis_level": "ALTER TABLE user_vespe ADD COLUMN analysis_level VARCHAR(50) DEFAULT 'basic'",
+            "pro_report_path": "ALTER TABLE user_vespe ADD COLUMN pro_report_path VARCHAR(500)",
+        }
+        for column, sql in migrations.items():
+            if column not in columns:
+                conn.execute(sa_text(sql))
+        conn.commit()
 
 
 def get_db():

@@ -1,4 +1,5 @@
 import { CheckCircle, AlertTriangle, XCircle, Gauge, Brain, ClipboardCheck } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
 
 const badges = {
   free: { label: 'Base', class: 'bg-vespa-black text-white' },
@@ -6,6 +7,7 @@ const badges = {
 }
 
 export default function ResultsCard({ result, plan = 'free' }) {
+  const { user, api } = useAuth()
   if (!result) return null
 
   const badge = badges[plan] || badges.free
@@ -23,6 +25,19 @@ export default function ResultsCard({ result, plan = 'free' }) {
     : result.confidence === 'high' ? CheckCircle : result.confidence === 'medium' ? AlertTriangle : XCircle
   const ConfidenceIcon = confidenceIcon
   const expert = result.expert_analysis
+
+  const buyFullReport = async () => {
+    if (!user) {
+      window.location.href = '/register?plan=avanzato'
+      return
+    }
+    const res = await api.post('/payments/create-checkout', {
+      plan: 'avanzato',
+      success_url: `${window.location.origin}/dashboard`,
+      cancel_url: `${window.location.origin}/analisi`,
+    })
+    window.location.href = res.data.session_url
+  }
 
   return (
     <div className="animate-scale-in overflow-hidden rounded-[2.25rem] bg-white shadow-[0_30px_90px_rgba(9,13,18,0.14)] ring-1 ring-vespa-black/10">
@@ -119,9 +134,9 @@ export default function ResultsCard({ result, plan = 'free' }) {
               per avere maggiori informazioni, registrati. La scheda completa apre il confronto colore,
               i range dei numeri telaio e motore, i dettagli storici e altri dati utili per capire meglio la tua Vespa.
             </p>
-            <a href="/register?plan=avanzato" className="mt-4 inline-flex rounded-full bg-white px-4 py-2 text-sm font-black text-vespa-black transition-transform hover:-translate-y-0.5">
+            <button type="button" onClick={buyFullReport} className="mt-4 inline-flex rounded-full bg-white px-4 py-2 text-sm font-black text-vespa-black transition-transform hover:-translate-y-0.5">
               Scopri la scheda completa →
-            </a>
+            </button>
           </div>
         )}
       </div>

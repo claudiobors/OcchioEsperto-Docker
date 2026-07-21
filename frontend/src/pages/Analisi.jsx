@@ -80,7 +80,7 @@ export default function Analisi() {
                 </p>
               </div>
             )}
-            <LeadForm />
+            <LeadForm currentVehicle={result} />
           </div>
         </div>
       </section>

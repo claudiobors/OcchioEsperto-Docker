@@ -5,7 +5,7 @@ Endpoints for identifying, analyzing, and managing Vespa scooters.
 import json
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File, Form
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status, UploadFile, File, Form
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -74,6 +74,13 @@ class SaveVespaRequest(BaseModel):
     engine_number: Optional[str] = None
     color_name: Optional[str] = None
     notes: Optional[str] = None
+
+
+class UpdateGarageVespaRequest(BaseModel):
+    display_name: Optional[str] = None
+    notes: Optional[str] = None
+    color_name: Optional[str] = None
+    color_hex: Optional[str] = None
 
 
 class SaveVespaResponse(BaseModel):
@@ -148,11 +155,14 @@ async def identify_vespa(
 
     matched_model = None
     match = None
+    frame_match = None
+    engine_match = None
 
     # Try frame number matching first
     if frame_number:
-        match = knowledge_base.identify_by_frame_number(frame_number, year=year)
-        if match:
+        frame_match = knowledge_base.identify_by_frame_number(frame_number, year=year)
+        if frame_match:
+            match = frame_match
             matched_model = {
                 "id": match["model_id"],
                 "name": match["model_name"],
@@ -167,8 +177,9 @@ async def identify_vespa(
 
     # Try engine number if frame didn't match
     if not matched_model and engine_number:
-        match = knowledge_base.identify_by_engine_number(engine_number, year=year)
-        if match:
+        engine_match = knowledge_base.identify_by_engine_number(engine_number, year=year)
+        if engine_match:
+            match = engine_match
             matched_model = {
                 "id": match["model_id"],
                 "name": match["model_name"],
@@ -180,6 +191,22 @@ async def identify_vespa(
             result["confidence"] = match.get("confidence", "medium")
             result["match_type"] = "engine_number"
             result["model"] = matched_model
+
+    if frame_number and not engine_number and frame_match:
+        ranges = knowledge_base._get_engine_ranges(frame_match["model_id"])
+        if ranges:
+            result["engine_prefix_suggestion"] = ranges[0].get("notes") or ranges[0].get("engine_number_start")
+    if engine_number and not frame_number and engine_match:
+        ranges = knowledge_base._get_frame_ranges(engine_match["model_id"])
+        if ranges:
+            result["frame_prefix_suggestion"] = ranges[0].get("notes") or ranges[0].get("frame_number_start")
+    if frame_number and engine_number:
+        if not engine_match:
+            engine_match = knowledge_base.identify_by_engine_number(engine_number, year=year)
+        result["number_correspondence"] = {
+            "status": "coherent" if frame_match and engine_match and frame_match["model_id"] == engine_match["model_id"] else "to_review",
+            "message": "Telaio e motore risultano coerenti per lo stesso modello." if frame_match and engine_match and frame_match["model_id"] == engine_match["model_id"] else "Telaio e motore meritano un controllo più attento nella scheda completa.",
+        }
 
     # Save up to 10 photos for this account-backed identification.
     uploaded_photos = [p for p in ([photo] if photo and photo.filename else []) + list(photos or []) if p and p.filename]
@@ -249,6 +276,7 @@ async def identify_vespa(
     result["photo_count"] = len(photo_paths)
     vespa = UserVespa(
         user_id=current_user.id,
+        display_name=(matched_model.get("name") if matched_model else result.get("expert_analysis", {}).get("model_name")) or "La mia Vespa",
         model_id=matched_model.get("id") if matched_model else None,
         model_name=(matched_model.get("name") if matched_model else result.get("expert_analysis", {}).get("model_name")) or "Identificazione da completare",
         model_slug=matched_model.get("slug") if matched_model else None,
@@ -346,6 +374,7 @@ def save_vespa(
 
     vespa = UserVespa(
         user_id=current_user.id,
+        display_name=req.model_name,
         model_name=req.model_name,
         year=req.year,
         frame_number=req.frame_number,
@@ -368,23 +397,108 @@ def get_garage(
     """Get user's saved Vespe (digital garage)."""
     vespe = db.query(UserVespa).filter(UserVespa.user_id == current_user.id).all()
     return {
-        "vespe": [
-            {
-                "id": v.id,
-                "model_name": v.model_name,
-                "year": v.year,
-                "frame_number": v.frame_number,
-                "engine_number": v.engine_number,
-                "color_name": v.color_name,
-                "notes": v.notes,
-                "photo_path": v.photo_path,
-                "analysis": json.loads(v.analysis_json) if v.analysis_json else None,
-                "created_at": v.created_at.isoformat() if v.created_at else None,
-            }
-            for v in vespe
-        ],
+        "vespe": [_serialize_vespa(v) for v in vespe],
         "disclaimer": DISCLAIMER,
     }
+
+
+@router.get("/garage/{vespa_id}")
+def get_garage_vespa(
+    vespa_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Open one saved Vespa with its stored analysis."""
+    return _serialize_vespa(_get_user_vespa(db, current_user.id, vespa_id))
+
+
+@router.patch("/garage/{vespa_id}")
+def update_garage_vespa(
+    vespa_id: int,
+    req: UpdateGarageVespaRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Rename a saved Vespa and update editable garage fields."""
+    vespa = _get_user_vespa(db, current_user.id, vespa_id)
+    if req.display_name is not None:
+        vespa.display_name = sanitize_string(req.display_name, max_length=255) or vespa.model_name
+    if req.notes is not None:
+        vespa.notes = sanitize_string(req.notes, max_length=1000)
+    if req.color_name is not None:
+        vespa.color_name = sanitize_string(req.color_name, max_length=100)
+    if req.color_hex is not None:
+        vespa.color_hex = sanitize_string(req.color_hex, max_length=7)
+    db.commit()
+    db.refresh(vespa)
+    return _serialize_vespa(vespa)
+
+
+@router.post("/garage/{vespa_id}/photo")
+async def update_garage_photo(
+    vespa_id: int,
+    photo: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Choose/upload the primary image for a garage Vespa."""
+    vespa = _get_user_vespa(db, current_user.id, vespa_id)
+    vespa.photo_path = await save_upload_file(photo, subdir=f"garage/user-{current_user.id}")
+    db.commit()
+    db.refresh(vespa)
+    return _serialize_vespa(vespa)
+
+
+@router.post("/garage/{vespa_id}/pro-analysis")
+def run_pro_analysis(
+    vespa_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Use an active paid token/plan to enrich one saved vehicle analysis."""
+    if current_user.plan not in (UserPlan.INTERMEDIO, UserPlan.AVANZATO):
+        raise HTTPException(status_code=status.HTTP_402_PAYMENT_REQUIRED, detail="Sblocca una scheda completa per approfondire questo veicolo.")
+    vespa = _get_user_vespa(db, current_user.id, vespa_id)
+    stored = json.loads(vespa.analysis_json) if vespa.analysis_json else {}
+    if vespa.model_id:
+        stored["pro_analysis"] = knowledge_base.get_full_analysis(vespa.model_id, current_user.plan.value)
+    stored["expert_deep_dive"] = ai_expert.enrich_identification(
+        frame_number=vespa.frame_number,
+        engine_number=vespa.engine_number,
+        year=vespa.year,
+        notes=vespa.notes,
+        plan=current_user.plan.value,
+        analysis_depth="pro",
+        photo_uploaded=bool(vespa.photo_path),
+    )
+    vespa.analysis_level = current_user.plan.value
+    vespa.analysis_json = json.dumps(stored, ensure_ascii=False)
+    db.commit()
+    db.refresh(vespa)
+    return _serialize_vespa(vespa)
+
+
+@router.get("/garage/{vespa_id}/report.pdf")
+def download_pro_report(
+    vespa_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Download a compact PDF report for paid, enriched vehicles."""
+    vespa = _get_user_vespa(db, current_user.id, vespa_id)
+    if current_user.plan not in (UserPlan.INTERMEDIO, UserPlan.AVANZATO) or vespa.analysis_level == "basic":
+        raise HTTPException(status_code=status.HTTP_402_PAYMENT_REQUIRED, detail="Report Pro disponibile dopo aver sbloccato la scheda completa.")
+    pdf = _build_simple_pdf([
+        "OcchioEsperto.it - Report Pro",
+        f"Veicolo: {vespa.display_name or vespa.model_name}",
+        f"Modello: {vespa.model_name}",
+        f"Anno: {vespa.year or 'N/D'}",
+        f"Telaio: {vespa.frame_number or 'N/D'}",
+        f"Motore: {vespa.engine_number or 'N/D'}",
+        "Include dati storici, range telaio/motore, controlli colore e analisi esperta disponibili per il piano attivo.",
+        DISCLAIMER,
+    ])
+    return Response(content=pdf, media_type="application/pdf", headers={"Content-Disposition": f'attachment; filename="occhioesperto-vespa-{vespa.id}.pdf"'})
 
 
 @router.delete("/garage/{vespa_id}")
@@ -442,3 +556,61 @@ def create_lead(
     })
 
     return LeadResponse(id=lead.id, message="Grazie! La tua richiesta di vendita è stata ricevuta.")
+
+
+def _get_user_vespa(db: Session, user_id: int, vespa_id: int) -> UserVespa:
+    vespa = db.query(UserVespa).filter(UserVespa.id == vespa_id, UserVespa.user_id == user_id).first()
+    if not vespa:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vespa non trovata nel garage")
+    return vespa
+
+
+def _serialize_vespa(v: UserVespa) -> dict:
+    return {
+        "id": v.id,
+        "display_name": v.display_name or v.model_name,
+        "model_name": v.model_name,
+        "model_id": v.model_id,
+        "model_slug": v.model_slug,
+        "year": v.year,
+        "frame_number": v.frame_number,
+        "engine_number": v.engine_number,
+        "color_name": v.color_name,
+        "color_hex": v.color_hex,
+        "notes": v.notes,
+        "photo_path": v.photo_path,
+        "analysis_level": v.analysis_level or "basic",
+        "pro_report_path": v.pro_report_path,
+        "analysis": json.loads(v.analysis_json) if v.analysis_json else None,
+        "created_at": v.created_at.isoformat() if v.created_at else None,
+    }
+
+
+def _build_simple_pdf(lines: list[str]) -> bytes:
+    """Tiny dependency-free text PDF generator for the downloadable Pro report."""
+    safe_lines = [line.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")[:100] for line in lines]
+    text_ops = ["BT", "/F1 12 Tf", "50 790 Td"]
+    for i, line in enumerate(safe_lines):
+        if i:
+            text_ops.append("0 -18 Td")
+        text_ops.append(f"({line}) Tj")
+    text_ops.append("ET")
+    stream = "\n".join(text_ops).encode("latin-1", "replace")
+    objects = [
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+        b"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>",
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        b"<< /Length " + str(len(stream)).encode() + b" >>\nstream\n" + stream + b"\nendstream",
+    ]
+    pdf = bytearray(b"%PDF-1.4\n")
+    offsets = [0]
+    for idx, obj in enumerate(objects, 1):
+        offsets.append(len(pdf))
+        pdf.extend(f"{idx} 0 obj\n".encode() + obj + b"\nendobj\n")
+    xref = len(pdf)
+    pdf.extend(f"xref\n0 {len(objects)+1}\n0000000000 65535 f \n".encode())
+    for off in offsets[1:]:
+        pdf.extend(f"{off:010d} 00000 n \n".encode())
+    pdf.extend(f"trailer << /Size {len(objects)+1} /Root 1 0 R >>\nstartxref\n{xref}\n%%EOF".encode())
+    return bytes(pdf)
