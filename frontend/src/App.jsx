@@ -15,7 +15,7 @@ import NotFound from './pages/NotFound'
 function App() {
   return (
     <ToastProvider>
-      <div className="min-h-screen flex flex-col">
+      <div className="oe-shell min-h-screen flex flex-col">
         <Navbar />
         <main className="flex-1">
           <Routes>

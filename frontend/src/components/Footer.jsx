@@ -1,69 +1,60 @@
 import { Link } from 'react-router-dom'
+import { Sparkles, Mail, ShieldCheck } from 'lucide-react'
 
 export default function Footer() {
   return (
-    <footer className="bg-vespa-black text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Brand */}
+    <footer className="dark-panel mt-10 border-t border-white/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-[1.3fr_0.7fr_0.8fr]">
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-full bg-vespa-green flex items-center justify-center">
-                <span className="text-white font-bold text-sm">OE</span>
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-vespa-gold to-vespa-green">
+                <Sparkles className="h-5 w-5 text-white" />
               </div>
-              <span className="font-heading text-xl font-bold">
-                Occhio<span className="text-vespa-green">Esperto</span>
-              </span>
+              <div>
+                <span className="block font-heading text-2xl font-bold tracking-[-0.05em] text-white">
+                  Occhio<span className="gold-text">Esperto</span>
+                </span>
+                <span className="text-[10px] font-black uppercase tracking-[0.28em] text-vespa-cream/48">
+                  Archivio · AI · Valore
+                </span>
+              </div>
             </div>
-            <p className="text-vespa-gray-light text-sm leading-relaxed">
-              L'assistente AI specializzato per appassionati e restauratori di Vespa Piaggio.
+            <p className="mt-5 max-w-md text-sm leading-7 text-vespa-cream/62">
+              Una piattaforma italiana per identificare, valutare e raccontare Vespe classiche con un’interfaccia degna di un mezzo iconico.
             </p>
           </div>
 
-          {/* Links */}
           <div>
-            <h3 className="font-heading text-lg font-semibold mb-4">Link</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/" className="text-vespa-gray-light hover:text-vespa-green transition-colors text-sm">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/analisi" className="text-vespa-gray-light hover:text-vespa-green transition-colors text-sm">
-                  Analisi Vespa
-                </Link>
-              </li>
-              <li>
-                <Link to="/pricing" className="text-vespa-gray-light hover:text-vespa-green transition-colors text-sm">
-                  Piani
-                </Link>
-              </li>
-              <li>
-                <Link to="/dashboard" className="text-vespa-gray-light hover:text-vespa-green transition-colors text-sm">
-                  Il mio garage
-                </Link>
-              </li>
+            <h3 className="text-sm font-black uppercase tracking-[0.24em] text-vespa-gold-light">Naviga</h3>
+            <ul className="mt-5 space-y-3">
+              {[
+                ['Home', '/'],
+                ['Analisi Vespa', '/analisi'],
+                ['Piani', '/pricing'],
+                ['Garage', '/dashboard'],
+              ].map(([label, to]) => (
+                <li key={to}>
+                  <Link to={to} className="text-sm font-bold text-vespa-cream/62 transition-colors hover:text-white">
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Info */}
           <div>
-            <h3 className="font-heading text-lg font-semibold mb-4">Info</h3>
-            <ul className="space-y-2">
-              <li className="text-vespa-gray-light text-sm">
-                &copy; {new Date().getFullYear()} OcchioEsperto
-              </li>
-              <li className="text-vespa-gray-light text-sm">
-                Supporto: info@occhioesperto.it
-              </li>
+            <h3 className="text-sm font-black uppercase tracking-[0.24em] text-vespa-gold-light">Fiducia</h3>
+            <ul className="mt-5 space-y-3 text-sm text-vespa-cream/62">
+              <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-vespa-gold" /> info@occhioesperto.it</li>
+              <li className="flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-vespa-gold" /> Non affiliato al Gruppo Piaggio</li>
+              <li>&copy; {new Date().getFullYear()} OcchioEsperto</li>
             </ul>
           </div>
         </div>
 
-        {/* Disclaimer */}
-        <div className="mt-8 pt-8 border-t border-vespa-black-light/50">
-          <p className="text-xs text-vespa-gray leading-relaxed text-center">
+        <div className="mt-12 border-t border-white/10 pt-7">
+          <p className="text-center text-xs leading-6 text-vespa-cream/45">
             Questo servizio offre un'analisi basata su dati storici per supportare appassionati e restauratori.
             Non costituisce un certificato ufficiale di origine e non è affiliato in alcun modo al Gruppo Piaggio.
           </p>

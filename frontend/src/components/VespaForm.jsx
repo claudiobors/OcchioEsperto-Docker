@@ -111,22 +111,22 @@ export default function VespaForm({ onResult }) {
   }
 
   const inputClass = (fieldName) => `
-    w-full px-4 py-3 rounded-xl border bg-white outline-none transition-all duration-200 text-sm
-    ${errors[fieldName] ? 'border-vespa-red focus:border-vespa-red focus:ring-1 focus:ring-vespa-red' : 'border-vespa-cream-dark focus:border-vespa-green focus:ring-1 focus:ring-vespa-green'}
+    w-full px-4 py-3.5 rounded-2xl border bg-white/80 outline-none transition-all duration-200 text-sm shadow-inner shadow-vespa-black/5
+    ${errors[fieldName] ? 'border-vespa-red focus:border-vespa-red focus:ring-4 focus:ring-vespa-red/10' : 'border-vespa-black/10 focus:border-vespa-green focus:ring-4 focus:ring-vespa-green/10'}
   `
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Photo Upload */}
       <div>
-        <label className="block text-sm font-medium text-vespa-black mb-2">
-          <Camera className="w-4 h-4 inline mr-1" />
+        <label className="block text-sm font-black uppercase tracking-[0.16em] text-vespa-black mb-3">
+          <Camera className="w-4 h-4 inline mr-1 text-vespa-green" />
           Foto della Vespa
         </label>
-        <div className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-xl cursor-pointer bg-white transition-all duration-200 ${
-          errors.photo ? 'border-vespa-red' : 'border-vespa-cream-dark hover:border-vespa-green'
+        <div className={`mt-1 flex justify-center px-6 pt-6 pb-7 border-2 border-dashed rounded-[1.75rem] cursor-pointer bg-white/70 transition-all duration-200 hover:bg-white ${
+          errors.photo ? 'border-vespa-red' : 'border-vespa-black/10 hover:border-vespa-green/70'
         }`}>
-          <div className="space-y-2 text-center">
+          <div className="space-y-3 text-center">
             {photoPreview ? (
               <div className="relative">
                 <img src={photoPreview} alt="Anteprima" className="mx-auto max-h-48 rounded-lg object-contain" />
@@ -162,8 +162,8 @@ export default function VespaForm({ onResult }) {
 
       {/* Frame Number */}
       <div>
-        <label htmlFor="telaio" className="block text-sm font-medium text-vespa-black mb-1">
-          <Hash className="w-4 h-4 inline mr-1" />
+        <label htmlFor="telaio" className="block text-sm font-black uppercase tracking-[0.16em] text-vespa-black mb-2">
+          <Hash className="w-4 h-4 inline mr-1 text-vespa-green" />
           Numero Telaio
         </label>
         <input
@@ -185,8 +185,8 @@ export default function VespaForm({ onResult }) {
 
       {/* Engine Number */}
       <div>
-        <label htmlFor="motore" className="block text-sm font-medium text-vespa-black mb-1">
-          <Hash className="w-4 h-4 inline mr-1" />
+        <label htmlFor="motore" className="block text-sm font-black uppercase tracking-[0.16em] text-vespa-black mb-2">
+          <Hash className="w-4 h-4 inline mr-1 text-vespa-green" />
           Numero Motore
         </label>
         <input
@@ -208,8 +208,8 @@ export default function VespaForm({ onResult }) {
 
       {/* Registration Date */}
       <div>
-        <label htmlFor="immatricolazione" className="block text-sm font-medium text-vespa-black mb-1">
-          <Calendar className="w-4 h-4 inline mr-1" />
+        <label htmlFor="immatricolazione" className="block text-sm font-black uppercase tracking-[0.16em] text-vespa-black mb-2">
+          <Calendar className="w-4 h-4 inline mr-1 text-vespa-green" />
           Data Immatricolazione
         </label>
         <input
@@ -218,13 +218,13 @@ export default function VespaForm({ onResult }) {
           id="immatricolazione"
           value={formData.immatricolazione}
           onChange={handleChange}
-          className="w-full px-4 py-3 rounded-xl border border-vespa-cream-dark bg-white focus:border-vespa-green focus:ring-1 focus:ring-vespa-green outline-none transition-colors text-sm"
+          className="w-full px-4 py-3.5 rounded-2xl border border-vespa-black/10 bg-white/80 focus:border-vespa-green focus:ring-4 focus:ring-vespa-green/10 outline-none transition-colors text-sm shadow-inner shadow-vespa-black/5"
         />
       </div>
 
       {/* Notes */}
       <div>
-        <label htmlFor="note" className="block text-sm font-medium text-vespa-black mb-1">
+        <label htmlFor="note" className="block text-sm font-black uppercase tracking-[0.16em] text-vespa-black mb-2">
           Note aggiuntive
         </label>
         <textarea
@@ -234,7 +234,7 @@ export default function VespaForm({ onResult }) {
           value={formData.note}
           onChange={handleChange}
           placeholder="Eventuali dettagli aggiuntivi..."
-          className="w-full px-4 py-3 rounded-xl border border-vespa-cream-dark bg-white focus:border-vespa-green focus:ring-1 focus:ring-vespa-green outline-none transition-colors text-sm resize-none"
+          className="w-full px-4 py-3.5 rounded-2xl border border-vespa-black/10 bg-white/80 focus:border-vespa-green focus:ring-4 focus:ring-vespa-green/10 outline-none transition-colors text-sm resize-none shadow-inner shadow-vespa-black/5"
         />
       </div>
 
@@ -250,7 +250,7 @@ export default function VespaForm({ onResult }) {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-vespa-green hover:bg-vespa-green-light text-white font-medium py-3 px-6 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-vespa-green/20"
+        className="cta-primary w-full rounded-2xl py-4 px-6 font-black transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:-translate-y-0.5"
       >
         {loading ? (
           <>

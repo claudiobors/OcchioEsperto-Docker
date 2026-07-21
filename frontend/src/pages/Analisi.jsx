@@ -1,16 +1,12 @@
 import { useState } from 'react'
-import { useAuth } from '../context/AuthContext'
 import VespaForm from '../components/VespaForm'
 import ResultsCard from '../components/ResultsCard'
 import LeadForm from '../components/LeadForm'
-import { FormSkeleton } from '../components/Skeletons'
-import { Search, Sparkles } from 'lucide-react'
+import { Search, Sparkles, ShieldCheck, Camera, Gauge } from 'lucide-react'
 
 export default function Analisi() {
-  const { user } = useAuth()
   const [result, setResult] = useState(null)
   const [plan, setPlan] = useState('free')
-  const [loading, setLoading] = useState(false)
 
   const handleResult = (data) => {
     setResult(data)
@@ -18,59 +14,76 @@ export default function Analisi() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      {/* Header */}
-      <div className="text-center mb-10 animate-fade-in-up">
-        <div className="inline-flex items-center gap-2 bg-vespa-green/10 text-vespa-green text-sm font-medium px-4 py-2 rounded-full mb-4">
-          <Sparkles className="w-4 h-4" />
-          Analisi AI
-        </div>
-        <h1 className="font-heading text-3xl sm:text-4xl font-bold text-vespa-black mb-4">
-          Analizza la tua Vespa
-        </h1>
-        <p className="text-vespa-gray text-lg max-w-2xl mx-auto">
-          Inserisci i dati della tua Vespa o carica una foto per ricevere un'analisi dettagliata.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Form */}
-        <div className="lg:col-span-2 animate-fade-in-up-delay-1">
-          {loading ? (
-            <FormSkeleton />
-          ) : (
-            <div className="bg-white rounded-2xl border border-vespa-cream-dark p-6 sm:p-8 transition-all duration-300 hover:shadow-md">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-full bg-vespa-green/10 flex items-center justify-center">
-                  <Search className="w-5 h-5 text-vespa-green" />
-                </div>
-                <div>
-                  <h2 className="font-heading font-semibold text-vespa-black text-lg">
-                    Inserisci i dati
-                  </h2>
-                  <p className="text-xs text-vespa-gray">
-                    Tutti i campi sono opzionali — più dati inserisci, più precisa sarà l'analisi.
-                  </p>
-                </div>
+    <div className="relative overflow-hidden">
+      <section className="dark-panel px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+        <div className="absolute inset-0 vespa-pattern opacity-25" />
+        <div className="relative mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-black text-vespa-gold-light">
+                <Sparkles className="h-4 w-4" />
+                Analisi AI Vespa
               </div>
-              <VespaForm onResult={handleResult} />
+              <h1 className="mt-7 font-heading text-5xl font-bold leading-[0.95] tracking-[-0.06em] text-white sm:text-6xl">
+                Identifica la Vespa. Capisci cosa hai davanti.
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-vespa-cream/72">
+                Inserisci telaio, motore, anno o foto. Ti restituiamo una scheda pulita con modello probabile,
+                anni di produzione, cilindrata e livello di confidenza.
+              </p>
             </div>
-          )}
-        </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          {/* Results (if any) */}
-          {result && (
-            <div className="animate-scale-in">
+            <div className="grid grid-cols-3 gap-3">
+              {[
+                [Camera, 'Foto', 'opzionale'],
+                [Search, 'Telaio', 'consigliato'],
+                [Gauge, 'Output', 'immediato'],
+              ].map(([Icon, title, text]) => (
+                <div key={title} className="rounded-3xl border border-white/10 bg-white/10 p-5 backdrop-blur">
+                  <Icon className="h-6 w-6 text-vespa-gold-light" />
+                  <p className="mt-4 font-black text-white">{title}</p>
+                  <p className="text-xs uppercase tracking-[0.16em] text-vespa-cream/45">{text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="luxury-card rounded-[2.25rem] p-6 sm:p-8">
+            <div className="mb-8 flex items-start gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-vespa-black text-white shadow-xl shadow-vespa-black/15">
+                <Search className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="font-heading text-3xl font-bold text-vespa-black">Dati della Vespa</h2>
+                <p className="mt-1 text-sm leading-6 text-vespa-gray">
+                  Tutti i campi sono opzionali, ma telaio e motore aumentano molto la precisione.
+                </p>
+              </div>
+            </div>
+            <VespaForm onResult={handleResult} />
+          </div>
+
+          <div className="space-y-8">
+            {result ? (
               <ResultsCard result={result} plan={plan} />
-            </div>
-          )}
-
-          {/* Lead Form */}
-          <LeadForm />
+            ) : (
+              <div className="dark-panel rounded-[2.25rem] p-8 shadow-[0_32px_90px_rgba(9,13,18,0.22)]">
+                <ShieldCheck className="h-10 w-10 text-vespa-gold-light" />
+                <h3 className="mt-6 font-heading text-3xl font-bold text-white">Il risultato comparirà qui.</h3>
+                <p className="mt-4 text-sm leading-7 text-vespa-cream/68">
+                  Visualizzerai modello, anni, cilindrata, confidenza e disclaimer. L’obiettivo è darti un primo responso chiaro,
+                  non un certificato ufficiale.
+                </p>
+              </div>
+            )}
+            <LeadForm />
+          </div>
         </div>
-      </div>
+      </section>
     </div>
   )
 }

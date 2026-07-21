@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Search, Shield, Camera, DollarSign, CheckCircle, Sparkles } from 'lucide-react'
+import { ArrowRight, Search, ShieldCheck, Camera, Gauge, CheckCircle2, Sparkles, Gem, Wrench, BadgeEuro, ClipboardCheck } from 'lucide-react'
 import PricingCards from '../components/PricingCards'
 
 function ScrollRevealSection({ children, className = '' }) {
@@ -10,7 +10,7 @@ function ScrollRevealSection({ children, className = '' }) {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.unobserve(entry.target) } },
-      { threshold: 0.1 }
+      { threshold: 0.12 }
     )
     if (ref.current) observer.observe(ref.current)
     return () => observer.disconnect()
@@ -23,234 +23,228 @@ function ScrollRevealSection({ children, className = '' }) {
   )
 }
 
+const stats = [
+  { value: '47+', label: 'modelli storici' },
+  { value: '70 anni', label: 'di archivio Piaggio' },
+  { value: 'AI + dati', label: 'non solo opinioni' },
+]
+
+const steps = [
+  {
+    icon: Camera,
+    title: 'Carica foto o numeri',
+    text: 'Telaio, motore, anno e dettagli visivi: più indizi dai, più l’identificazione diventa precisa.',
+  },
+  {
+    icon: Search,
+    title: 'Incrocio storico',
+    text: 'Il motore confronta range di produzione, sigle, cilindrate, colori e schede modello.',
+  },
+  {
+    icon: ClipboardCheck,
+    title: 'Scheda chiara',
+    text: 'Ricevi modello probabile, anni, cilindrata, confidenza e percorso per analisi premium.',
+  },
+]
+
+const benefits = [
+  { icon: ShieldCheck, title: 'Più fiducia prima di comprare', text: 'Eviti Vespe raccontate male, restauri incoerenti e stime gonfiate.' },
+  { icon: Wrench, title: 'Pensato per restauratori', text: 'Colori storici, range telaio/motore e checklist originalità quando ti serve il dettaglio.' },
+  { icon: BadgeEuro, title: 'Prezzo più difendibile', text: 'La stima di mercato rende più facile trattare, vendere o assicurare il mezzo.' },
+]
+
 export default function Home() {
   return (
     <div>
-      {/* Hero Section */}
-      <section className="relative overflow-hidden">
-        {/* Background pattern */}
+      <section className="relative overflow-hidden dark-panel">
         <div className="absolute inset-0 vespa-pattern opacity-30" />
-        <div className="absolute inset-0 bg-gradient-to-b from-vespa-cream via-vespa-cream to-white" />
+        <div className="absolute left-1/2 top-0 h-[38rem] w-[38rem] -translate-x-1/2 rounded-full bg-vespa-gold/15 blur-3xl" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-32">
+          <div className="grid lg:grid-cols-[0.92fr_1.08fr] gap-12 lg:gap-16 items-center">
+            <div className="max-w-2xl">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-bold text-vespa-gold-light shadow-2xl shadow-black/20 animate-fade-in-up">
+                <Sparkles className="w-4 h-4" />
+                Identificazione Vespa d’autore
+              </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
-          <div className="text-center max-w-3xl mx-auto">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-vespa-green/10 text-vespa-green text-sm font-medium px-4 py-2 rounded-full mb-8 animate-fade-in-up">
-              <Sparkles className="w-4 h-4" />
-              AI Specializzata per Appassionati Vespa
+              <h1 className="mt-8 font-heading text-5xl sm:text-6xl lg:text-7xl font-bold leading-[0.95] tracking-[-0.06em] text-white animate-fade-in-up-delay-1">
+                La tua Vespa merita una diagnosi bella quanto la sua storia.
+              </h1>
+
+              <p className="mt-7 text-lg sm:text-xl leading-8 text-vespa-cream/78 animate-fade-in-up-delay-2">
+                OcchioEsperto unisce archivio storico, AI e occhio da collezionista per riconoscere modello,
+                anno, dettagli originali e valore indicativo. Semplice, elegante, utile.
+              </p>
+
+              <div className="mt-10 flex flex-col sm:flex-row gap-4 animate-fade-in-up-delay-3">
+                <Link
+                  to="/analisi"
+                  className="cta-primary inline-flex items-center justify-center gap-2 rounded-2xl px-7 py-4 text-base font-bold transition-transform hover:-translate-y-0.5"
+                >
+                  Identifica la mia Vespa
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+                <Link
+                  to="/pricing"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/20 bg-white/10 px-7 py-4 text-base font-bold text-white backdrop-blur transition-all hover:-translate-y-0.5 hover:bg-white/15"
+                >
+                  Vedi i piani
+                </Link>
+              </div>
+
+              <div className="mt-12 grid grid-cols-3 gap-3 animate-fade-in-up-delay-3">
+                {stats.map((item) => (
+                  <div key={item.label} className="rounded-2xl border border-white/12 bg-white/[0.06] p-4 backdrop-blur">
+                    <p className="text-2xl font-black text-white">{item.value}</p>
+                    <p className="mt-1 text-xs font-medium uppercase tracking-[0.18em] text-vespa-cream/55">{item.label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-vespa-black leading-tight mb-6 animate-fade-in-up-delay-1">
-              Identifica, Valuta e
-              <span className="text-vespa-green"> Scopri</span> la
-              Storia della tua Vespa
-            </h1>
+            <div className="relative animate-fade-in-up-delay-2">
+              <div className="absolute -inset-8 rounded-[3rem] bg-vespa-green/20 blur-3xl" />
+              <img
+                src="/static/hero-vespa.svg"
+                alt="Illustrazione premium di una Vespa classica analizzata da OcchioEsperto"
+                className="relative w-full rounded-[2.5rem] border border-white/12 shadow-[0_40px_120px_rgba(0,0,0,0.45)]"
+              />
+              <div className="absolute -bottom-6 left-6 right-6 rounded-3xl border border-white/12 bg-white/90 p-5 text-vespa-black shadow-2xl backdrop-blur md:left-auto md:w-80">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-vespa-green">Risultato demo</p>
+                    <p className="mt-1 font-heading text-2xl font-bold">Vespa 150 GS</p>
+                  </div>
+                  <Gauge className="h-9 w-9 text-vespa-gold" />
+                </div>
+                <div className="mt-4 h-2 rounded-full bg-vespa-cream-dark">
+                  <div className="h-full w-[88%] rounded-full bg-gradient-to-r from-vespa-green to-vespa-gold" />
+                </div>
+                <p className="mt-3 text-sm text-vespa-gray">Confidenza alta · 1955—1961 · 150 cc</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            <p className="text-lg sm:text-xl text-vespa-gray leading-relaxed mb-10 max-w-2xl mx-auto animate-fade-in-up-delay-2">
-              Carica una foto o inserisci i numeri di telaio e motore.
-              Il nostro AI riconosce modello, anno, colori originali e ti dà una stima del valore di mercato.
-            </p>
+      <ScrollRevealSection>
+        <section className="py-20 sm:py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="text-sm font-black uppercase tracking-[0.24em] text-vespa-green">Metodo</p>
+              <h2 className="mt-3 font-heading text-4xl sm:text-5xl font-bold text-vespa-black">
+                Tre passaggi, zero confusione.
+              </h2>
+              <p className="mt-4 text-lg text-vespa-gray">
+                Un’esperienza da officina boutique: pochi campi, risultato chiaro, dettagli sbloccabili quando vuoi.
+              </p>
+            </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up-delay-3">
+            <div className="mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
+              {steps.map((step, index) => {
+                const Icon = step.icon
+                return (
+                  <div key={step.title} className="luxury-card group rounded-[2rem] p-8 transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_30px_90px_rgba(9,13,18,0.16)]">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-vespa-black text-white shadow-xl shadow-vespa-black/15 transition-transform group-hover:rotate-3 group-hover:scale-105">
+                      <Icon className="h-6 w-6" />
+                    </div>
+                    <p className="mt-8 text-sm font-black uppercase tracking-[0.22em] text-vespa-gold">0{index + 1}</p>
+                    <h3 className="mt-2 font-heading text-2xl font-bold text-vespa-black">{step.title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-vespa-gray">{step.text}</p>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </section>
+      </ScrollRevealSection>
+
+      <ScrollRevealSection>
+        <section className="py-20 sm:py-24 dark-panel overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div>
+                <p className="text-sm font-black uppercase tracking-[0.24em] text-vespa-gold-light">Valore reale</p>
+                <h2 className="mt-3 font-heading text-4xl sm:text-5xl font-bold text-white">
+                  Non è solo “che modello è?”. È capire se vale davvero.
+                </h2>
+                <p className="mt-5 text-lg leading-8 text-vespa-cream/75">
+                  Il bello di una Vespa classica sta nei dettagli: sigle, anni, colori, coerenza del restauro,
+                  rarità e mercato. OcchioEsperto li mette in ordine in una scheda leggibile.
+                </p>
+
+                <div className="mt-9 space-y-4">
+                  {benefits.map((benefit) => {
+                    const Icon = benefit.icon
+                    return (
+                      <div key={benefit.title} className="flex gap-4 rounded-3xl border border-white/10 bg-white/[0.06] p-5 backdrop-blur">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-vespa-gold text-vespa-black">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-white">{benefit.title}</h3>
+                          <p className="mt-1 text-sm leading-6 text-vespa-cream/65">{benefit.text}</p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              <div className="relative">
+                <div className="absolute -inset-8 rounded-[3rem] bg-vespa-gold/10 blur-3xl" />
+                <img
+                  src="/static/workshop-detail.svg"
+                  alt="Scheda tecnica illustrata con dettagli storici Vespa"
+                  className="relative w-full rounded-[2.5rem] border border-white/12 shadow-[0_38px_110px_rgba(0,0,0,0.42)]"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      </ScrollRevealSection>
+
+      <ScrollRevealSection>
+        <section className="py-20 sm:py-24 bg-white/55">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-sm font-black uppercase tracking-[0.24em] text-vespa-green">Prezzi</p>
+                <h2 className="mt-3 font-heading text-4xl sm:text-5xl font-bold text-vespa-black">
+                  Parti gratis. Paga solo quando vuoi più profondità.
+                </h2>
+              </div>
+              <p className="max-w-md text-vespa-gray">
+                Tre livelli puliti: identificazione rapida, scheda tecnica, oppure analisi completa da collezionista.
+              </p>
+            </div>
+            <PricingCards />
+          </div>
+        </section>
+      </ScrollRevealSection>
+
+      <ScrollRevealSection>
+        <section className="px-4 py-20 sm:px-6 lg:px-8">
+          <div className="relative mx-auto max-w-6xl overflow-hidden rounded-[2.5rem] dark-panel p-8 text-center shadow-[0_40px_120px_rgba(9,13,18,0.28)] sm:p-14">
+            <div className="absolute inset-0 vespa-pattern opacity-20" />
+            <div className="relative mx-auto max-w-3xl">
+              <Gem className="mx-auto h-10 w-10 text-vespa-gold-light" />
+              <h2 className="mt-5 font-heading text-4xl sm:text-5xl font-bold text-white">
+                Facciamola sembrare una piattaforma seria, non un form qualsiasi.
+              </h2>
+              <p className="mt-5 text-lg leading-8 text-vespa-cream/75">
+                Inizia dall’identificazione gratuita e trasforma ogni Vespa in una scheda ordinata, utile e bella da consultare.
+              </p>
               <Link
                 to="/analisi"
-                className="bg-vespa-green hover:bg-vespa-green-light text-white font-medium px-8 py-4 rounded-xl transition-colors flex items-center gap-2 text-lg shadow-lg shadow-vespa-green/20"
+                className="cta-primary mt-9 inline-flex items-center justify-center gap-2 rounded-2xl px-8 py-4 text-base font-bold transition-transform hover:-translate-y-0.5"
               >
-                Inizia l'analisi
+                Prova ora
                 <ArrowRight className="w-5 h-5" />
               </Link>
-              <Link
-                to="/pricing"
-                className="bg-white hover:bg-vespa-cream text-vespa-black font-medium px-8 py-4 rounded-xl transition-colors border border-vespa-cream-dark text-lg"
-              >
-                Vedi i piani
-              </Link>
-            </div>
-          </div>
-
-          {/* Mockup illustration */}
-          <div className="mt-16 max-w-4xl mx-auto animate-fade-in-up-delay-3">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-vespa-green/20 to-vespa-green/5 rounded-3xl blur-3xl" />
-              <div className="relative bg-white rounded-2xl shadow-2xl border border-vespa-cream-dark overflow-hidden p-4 sm:p-8">
-                <div className="flex flex-col lg:flex-row items-center gap-8">
-                  {/* Left: Vespa silhouette */}
-                  <div className="flex-1">
-                    <svg viewBox="0 0 200 200" className="w-full max-w-xs mx-auto" fill="none">
-                      <circle cx="100" cy="100" r="90" className="fill-vespa-cream/50" />
-                      <path d="M100 20 C120 20 138 35 145 55 L150 70 L160 65 L165 75 L150 82 L148 95 C145 120 125 140 100 140 C75 140 55 120 52 95 L50 82 L35 75 L40 65 L50 70 L55 55 C62 35 80 20 100 20 Z" className="fill-vespa-green/20" />
-                      <circle cx="100" cy="100" r="8" className="fill-vespa-green/40" />
-                      <rect x="95" y="55" width="10" height="30" rx="3" className="fill-vespa-green/30" />
-                      <circle cx="70" cy="135" r="15" className="fill-vespa-black/10" stroke="vespa-green/30" strokeWidth="2" />
-                      <circle cx="130" cy="135" r="15" className="fill-vespa-black/10" stroke="vespa-green/30" strokeWidth="2" />
-                    </svg>
-                  </div>
-                  {/* Right: Mock interface */}
-                  <div className="flex-1 w-full">
-                    <div className="bg-vespa-cream rounded-xl p-4 space-y-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-vespa-green" />
-                        <span className="text-xs font-medium text-vespa-black">Vespa 125 Primavera ET3</span>
-                      </div>
-                      <div className="h-2 bg-vespa-cream-dark rounded w-3/4" />
-                      <div className="h-2 bg-vespa-cream-dark rounded w-1/2" />
-                      <div className="flex gap-2 mt-2">
-                        <span className="text-xs bg-vespa-green/10 text-vespa-green px-2 py-1 rounded">Anno: 1976</span>
-                        <span className="text-xs bg-vespa-gold/10 text-vespa-gold px-2 py-1 rounded">€ 4.500</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <ScrollRevealSection>
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <h2 className="font-heading text-3xl sm:text-4xl font-bold text-vespa-black mb-4">
-                Come funziona
-              </h2>
-              <p className="text-vespa-gray text-lg max-w-2xl mx-auto">
-                Tre semplici passi per conoscere tutto sulla tua Vespa
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Step 1 */}
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-vespa-green/10 flex items-center justify-center">
-                  <Camera className="w-7 h-7 text-vespa-green" />
-                </div>
-                <h3 className="font-heading text-xl font-semibold text-vespa-black mb-3">
-                  1. Carica e inserisci
-                </h3>
-                <p className="text-vespa-gray text-sm leading-relaxed">
-                  Carica una foto della tua Vespa o inserisci i numeri di telaio e motore. Aggiungi la data di immatricolazione.
-                </p>
-              </div>
-
-              {/* Step 2 */}
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-vespa-green/10 flex items-center justify-center">
-                  <Search className="w-7 h-7 text-vespa-green" />
-                </div>
-                <h3 className="font-heading text-xl font-semibold text-vespa-black mb-3">
-                  2. Analisi AI
-                </h3>
-                <p className="text-vespa-gray text-sm leading-relaxed">
-                  Il nostro AI confronta i dati con il database storico Piaggio per identificare modello, anno e varianti.
-                </p>
-              </div>
-
-              {/* Step 3 */}
-              <div className="text-center">
-                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-vespa-green/10 flex items-center justify-center">
-                  <CheckCircle className="w-7 h-7 text-vespa-green" />
-                </div>
-                <h3 className="font-heading text-xl font-semibold text-vespa-black mb-3">
-                  3. Risultati e valore
-                </h3>
-                <p className="text-vespa-gray text-sm leading-relaxed">
-                  Ricevi una scheda dettagliata con modello, anno, colori storici, check originalità e stima del valore.
-                </p>
-              </div>
             </div>
           </div>
         </section>
-      </ScrollRevealSection>
-
-      {/* Benefits */}
-      <ScrollRevealSection>
-        <section className="py-20 bg-vespa-cream/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="font-heading text-3xl sm:text-4xl font-bold text-vespa-black mb-6">
-                Perché scegliere <span className="text-vespa-green">OcchioEsperto</span>
-              </h2>
-              <div className="space-y-4">
-                <div className="flex items-start gap-4">
-                  <Shield className="w-6 h-6 text-vespa-green shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-vespa-black">Database storico completo</h4>
-                    <p className="text-sm text-vespa-gray">Oltre 70 anni di modelli Vespa Piaggio dal 1946 a oggi.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <DollarSign className="w-6 h-6 text-vespa-green shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-vespa-black">Stima del valore di mercato</h4>
-                    <p className="text-sm text-vespa-gray">Basata su dati di vendita reali e condizioni del veicolo.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <Camera className="w-6 h-6 text-vespa-green shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-semibold text-vespa-black">Analisi colore AI</h4>
-                    <p className="text-sm text-vespa-gray">Riconoscimento automatico del colore dalla foto e confronto con i colori storici.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-vespa-green rounded-3xl p-8 text-white">
-              <h3 className="font-heading text-2xl font-bold mb-4">Inizia gratuitamente</h3>
-              <p className="text-vespa-cream/80 text-sm mb-6">
-                Registrati e ottieni l'identificazione base del modello e anno della tua Vespa. Nessuna carta di credito richiesta.
-              </p>
-              <Link
-                to="/register"
-                className="inline-flex items-center gap-2 bg-white text-vespa-green font-medium px-6 py-3 rounded-xl hover:bg-vespa-cream transition-colors"
-              >
-                Registrati gratis
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-            </div>
-          </div>
-        </div>
-        </section>
-      </ScrollRevealSection>
-
-      {/* Pricing Section */}
-      <ScrollRevealSection>
-        <section className="py-20 bg-white" id="pricing">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="font-heading text-3xl sm:text-4xl font-bold text-vespa-black mb-4">
-              Scegli il tuo piano
-            </h2>
-            <p className="text-vespa-gray text-lg max-w-2xl mx-auto">
-              Dall'identificazione base all'analisi completa con esperto AI
-            </p>
-          </div>
-          <PricingCards />
-        </div>
-      </section>
-      </ScrollRevealSection>
-
-      {/* CTA Section */}
-      <ScrollRevealSection>
-        <section className="py-20 bg-vespa-black">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="font-heading text-3xl sm:text-4xl font-bold text-white mb-4">
-            Pronto a scoprire la storia della tua Vespa?
-          </h2>
-          <p className="text-vespa-gray-light text-lg mb-8 max-w-2xl mx-auto">
-            Migliaia di appassionati usano OcchioEsperto per identificare, valutare e preservare le loro Vespe.
-          </p>
-          <Link
-            to="/analisi"
-            className="inline-flex items-center gap-2 bg-vespa-green hover:bg-vespa-green-light text-white font-medium px-8 py-4 rounded-xl transition-colors text-lg"
-          >
-            Inizia ora
-            <ArrowRight className="w-5 h-5" />
-          </Link>
-        </div>
-      </section>
       </ScrollRevealSection>
     </div>
   )
