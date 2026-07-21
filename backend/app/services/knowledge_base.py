@@ -123,14 +123,17 @@ class KnowledgeBase:
         cursor = conn.cursor()
 
         cursor.execute("""
-            SELECT e.model_id, e.engine_number_start, e.engine_number_end, e.year_start, e.year_end,
+            SELECT e.model_id,
+                   e.number_start as engine_number_start,
+                   e.number_end as engine_number_end,
+                   e.year_start, e.year_end,
                    m.name as model_name, m.slug as model_slug, m.production_start, m.production_end,
                    m.displacement_cc as engine_cc
             FROM vespa_engine_numbers e
             JOIN vespa_models m ON e.model_id = m.id
-            WHERE ? LIKE '%' || e.engine_number_start || '%'
-               OR ? LIKE '%' || e.engine_number_end || '%'
-               OR e.engine_number_start LIKE '%' || ? || '%'
+            WHERE ? LIKE '%' || e.number_start || '%'
+               OR ? LIKE '%' || e.number_end || '%'
+               OR e.number_start LIKE '%' || ? || '%'
             LIMIT 1
         """, (engine_number, engine_number, engine_number[:4]))
 
@@ -345,7 +348,9 @@ class KnowledgeBase:
         conn = self._get_connection()
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT id, engine_number_start, engine_number_end,
+            SELECT id,
+                   number_start as engine_number_start,
+                   number_end as engine_number_end,
                    year_start, year_end, notes
             FROM vespa_engine_numbers
             WHERE model_id = ?
