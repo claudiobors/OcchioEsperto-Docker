@@ -1,0 +1,62 @@
+<svg width="1100" height="760" viewBox="0 0 1100 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="paint" x1="260" y1="152" x2="909" y2="620" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8E7C0"/>
+      <stop offset="0.46" stop-color="#D8A445"/>
+      <stop offset="1" stop-color="#2F6FAD"/>
+    </linearGradient>
+    <linearGradient id="chrome" x1="169" y1="531" x2="908" y2="531" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8F3E8"/>
+      <stop offset="0.5" stop-color="#B8C7D9"/>
+      <stop offset="1" stop-color="#F8F3E8"/>
+    </linearGradient>
+    <filter id="shadow" x="68" y="123" width="968" height="537" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="34"/>
+      <feGaussianBlur stdDeviation="31"/>
+      <feComposite in2="hardAlpha" operator="out"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.02 0 0 0 0 0.03 0 0 0 0 0.05 0 0 0 0.45 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_2"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_2" result="shape"/>
+    </filter>
+    <radialGradient id="lamp" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(553 363) rotate(90) scale(335 463)">
+      <stop stop-color="#FFEDD2" stop-opacity="0.62"/>
+      <stop offset="1" stop-color="#FFEDD2" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1100" height="760" rx="44" fill="#090D12"/>
+  <path d="M70 95C212 12 391 17 520 88C631 149 687 247 821 260C943 272 1026 203 1092 147V760H0V162C21 141 43 113 70 95Z" fill="url(#lamp)"/>
+  <g opacity="0.25">
+    <path d="M66 612H1030" stroke="#F8F3E8" stroke-width="2"/>
+    <path d="M130 644H935" stroke="#D8A445" stroke-width="2"/>
+    <path d="M241 675H846" stroke="#2F6FAD" stroke-width="2"/>
+  </g>
+  <g filter="url(#shadow)">
+    <ellipse cx="318" cy="549" rx="111" ry="33" fill="#020304" fill-opacity="0.55"/>
+    <ellipse cx="778" cy="549" rx="121" ry="34" fill="#020304" fill-opacity="0.55"/>
+    <circle cx="318" cy="522" r="86" fill="#0C1117" stroke="url(#chrome)" stroke-width="18"/>
+    <circle cx="318" cy="522" r="42" fill="#151D27" stroke="#D8A445" stroke-width="8"/>
+    <circle cx="778" cy="522" r="88" fill="#0C1117" stroke="url(#chrome)" stroke-width="18"/>
+    <circle cx="778" cy="522" r="43" fill="#151D27" stroke="#D8A445" stroke-width="8"/>
+    <path d="M232 454C275 391 325 354 402 346L563 329C652 321 733 342 797 394L858 444C884 466 899 498 899 532H848C843 492 814 463 775 463H338C293 463 257 493 248 536H185C184 507 200 481 232 454Z" fill="url(#paint)"/>
+    <path d="M434 337C456 257 507 198 595 169C650 151 707 159 759 191C779 204 786 230 777 253L738 351L601 338L434 337Z" fill="#F8F3E8"/>
+    <path d="M589 184C617 173 669 173 722 204C738 214 744 232 738 249L711 320H575C583 271 587 223 589 184Z" fill="#0E1520"/>
+    <path d="M532 365C513 421 473 463 408 489L367 447C428 407 460 363 468 315L532 365Z" fill="#F8F3E8"/>
+    <path d="M803 400C852 387 896 401 932 441L953 464C964 477 960 497 945 505L895 533C896 499 883 468 858 444L803 400Z" fill="#F8F3E8"/>
+    <path d="M726 160L760 94C768 79 787 75 800 87L826 110" stroke="#F8F3E8" stroke-width="17" stroke-linecap="round"/>
+    <path d="M808 109H889" stroke="#D8A445" stroke-width="15" stroke-linecap="round"/>
+    <path d="M411 337L354 236C342 215 352 188 374 177L412 157" stroke="#F8F3E8" stroke-width="19" stroke-linecap="round"/>
+    <path d="M228 458H155C132 458 113 477 113 500V516H185" stroke="#D8A445" stroke-width="20" stroke-linecap="round"/>
+    <path d="M446 366C511 385 620 386 735 364" stroke="#0B1118" stroke-width="10" stroke-linecap="round" opacity="0.28"/>
+    <path d="M472 319H696" stroke="#D8A445" stroke-width="10" stroke-linecap="round"/>
+  </g>
+  <g opacity="0.9">
+    <rect x="75" y="76" width="140" height="34" rx="17" fill="#F8F3E8" fill-opacity="0.1" stroke="#F8F3E8" stroke-opacity="0.22"/>
+    <text x="96" y="99" fill="#F8F3E8" font-family="Inter, Arial" font-size="15" font-weight="700">AI GARAGE</text>
+  </g>
+  <g opacity="0.72">
+    <circle cx="960" cy="119" r="38" fill="#2F6FAD"/>
+    <circle cx="997" cy="156" r="18" fill="#D8A445"/>
+  </g>
+</svg>
