@@ -28,8 +28,8 @@ export default function Analisi() {
                 Identifica la Vespa. Capisci cosa hai davanti.
               </h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-vespa-cream/72">
-                Inserisci telaio, motore, anno o foto. Ti restituiamo una scheda pulita con modello probabile,
-                anni di produzione, cilindrata e livello di confidenza.
+                Accedi, inserisci telaio, motore, anno e fino a 10 fotografie. Ti restituiamo una scheda pulita con modello probabile,
+                anni di produzione, cilindrata e livello di confidenza, salvata nel tuo garage digitale.
               </p>
             </div>
 
@@ -60,7 +60,7 @@ export default function Analisi() {
               <div>
                 <h2 className="font-heading text-3xl font-bold text-vespa-black">Dati della Vespa</h2>
                 <p className="mt-1 text-sm leading-6 text-vespa-gray">
-                  Tutti i campi sono opzionali, ma telaio e motore aumentano molto la precisione.
+                  L’identificazione parte dal tuo account: così ogni risultato resta ordinato nel garage digitale.
                 </p>
               </div>
             </div>

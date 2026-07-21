@@ -41,8 +41,16 @@ STRIPE_PRICE_9_99 = os.environ.get("STRIPE_PRICE_9_99", "price_avanzato")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 OPENROUTER_BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1")
 OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "")
+OPENROUTER_MODEL_FREE = os.environ.get("OPENROUTER_MODEL_FREE", "")
+OPENROUTER_MODELS_PREMIUM = os.environ.get("OPENROUTER_MODELS_PREMIUM", "")
 AI_MODEL_FALLBACKS = [
     m.strip() for m in os.environ.get("AI_MODEL_FALLBACKS", OPENROUTER_MODEL).split(",") if m.strip()
+]
+AI_MODEL_FREE_FALLBACKS = [
+    m.strip() for m in os.environ.get("AI_MODEL_FREE_FALLBACKS", OPENROUTER_MODEL_FREE or OPENROUTER_MODEL).split(",") if m.strip()
+]
+AI_MODEL_PREMIUM_FALLBACKS = [
+    m.strip() for m in os.environ.get("AI_MODEL_PREMIUM_FALLBACKS", OPENROUTER_MODELS_PREMIUM or OPENROUTER_MODEL).split(",") if m.strip()
 ]
 AI_SITE_URL = os.environ.get("AI_SITE_URL", os.environ.get("PUBLIC_SITE_URL", "https://occhioesperto.it"))
 AI_APP_NAME = os.environ.get("AI_APP_NAME", "OcchioEsperto.it")

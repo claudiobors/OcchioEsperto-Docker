@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { Camera, Hash, Calendar, Loader2, AlertCircle } from 'lucide-react'
@@ -15,8 +16,8 @@ export default function VespaForm({ onResult }) {
     immatricolazione: '',
     note: '',
   })
-  const [photo, setPhoto] = useState(null)
-  const [photoPreview, setPhotoPreview] = useState(null)
+  const [photos, setPhotos] = useState([])
+  const [photoPreviews, setPhotoPreviews] = useState([])
 
   const validateField = (name, value) => {
     if (name === 'telaio' && value && value.length < 3) {
@@ -43,8 +44,13 @@ export default function VespaForm({ onResult }) {
   }
 
   const handlePhoto = (e) => {
-    const file = e.target.files?.[0]
-    if (file) {
+    const selected = Array.from(e.target.files || [])
+    if (selected.length) {
+      if (photos.length + selected.length > 10) {
+        setErrors((prev) => ({ ...prev, photo: 'Puoi caricare fino a 10 fotografie' }))
+        return
+      }
+      for (const file of selected) {
       if (file.size > 10 * 1024 * 1024) {
         setErrors((prev) => ({ ...prev, photo: 'La foto non può superare i 10MB' }))
         return
@@ -53,17 +59,31 @@ export default function VespaForm({ onResult }) {
         setErrors((prev) => ({ ...prev, photo: 'Il file deve essere un\'immagine' }))
         return
       }
-      setPhoto(file)
+      }
+      setPhotos((prev) => [...prev, ...selected])
       setErrors((prev) => ({ ...prev, photo: '' }))
-      const reader = new FileReader()
-      reader.onloadend = () => setPhotoPreview(reader.result)
-      reader.readAsDataURL(file)
+      selected.forEach((file) => {
+        const reader = new FileReader()
+        reader.onloadend = () => setPhotoPreviews((prev) => [...prev, reader.result])
+        reader.readAsDataURL(file)
+      })
     }
+  }
+
+  const removePhoto = (index) => {
+    setPhotos((prev) => prev.filter((_, i) => i !== index))
+    setPhotoPreviews((prev) => prev.filter((_, i) => i !== index))
+    setErrors((prev) => ({ ...prev, photo: '' }))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+
+    if (!user) {
+      setError('Accedi o crea il tuo account gratuito per avviare l’identificazione e ritrovare la scheda nel garage.')
+      return
+    }
 
     // Validate all fields
     const newErrors = {}
@@ -86,7 +106,7 @@ export default function VespaForm({ onResult }) {
 
     try {
       const formPayload = new FormData()
-      if (photo) formPayload.append('photo', photo)
+      photos.forEach((file) => formPayload.append('photos', file))
       if (formData.telaio) formPayload.append('frame_number', formData.telaio)
       if (formData.motore) formPayload.append('engine_number', formData.motore)
       if (formData.note) formPayload.append('notes', formData.note)
@@ -122,22 +142,31 @@ export default function VespaForm({ onResult }) {
       <div>
         <label className="block text-sm font-black uppercase tracking-[0.16em] text-vespa-black mb-3">
           <Camera className="w-4 h-4 inline mr-1 text-vespa-green" />
-          Foto della Vespa
+          Foto della Vespa <span className="text-vespa-gray">({photos.length}/10)</span>
         </label>
         <div className={`mt-1 flex justify-center px-6 pt-6 pb-7 border-2 border-dashed rounded-[1.75rem] cursor-pointer bg-white/70 transition-all duration-200 hover:bg-white ${
           errors.photo ? 'border-vespa-red' : 'border-vespa-black/10 hover:border-vespa-green/70'
         }`}>
           <div className="space-y-3 text-center">
-            {photoPreview ? (
-              <div className="relative">
-                <img src={photoPreview} alt="Anteprima" className="mx-auto max-h-48 rounded-lg object-contain" />
-                <button
-                  type="button"
-                  onClick={() => { setPhoto(null); setPhotoPreview(null); setErrors((prev) => ({ ...prev, photo: '' })) }}
-                  className="mt-2 text-xs text-vespa-red hover:underline"
-                >
-                  Rimuovi foto
-                </button>
+            {photoPreviews.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {photoPreviews.map((preview, index) => (
+                  <div key={`${preview}-${index}`} className="relative rounded-2xl bg-white p-2 shadow-sm">
+                    <img src={preview} alt={`Anteprima ${index + 1}`} className="h-28 w-full rounded-xl object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => removePhoto(index)}
+                      className="mt-2 text-xs font-bold text-vespa-red hover:underline"
+                    >
+                      Rimuovi
+                    </button>
+                  </div>
+                ))}
+                {photos.length < 10 && (
+                  <label htmlFor="photo-upload" className="flex min-h-32 cursor-pointer items-center justify-center rounded-2xl border border-dashed border-vespa-black/15 text-sm font-bold text-vespa-green">
+                    Aggiungi foto
+                  </label>
+                )}
               </div>
             ) : (
               <>
@@ -145,11 +174,14 @@ export default function VespaForm({ onResult }) {
                 <div className="text-sm text-vespa-gray-light">
                   <label htmlFor="photo-upload" className="relative cursor-pointer text-vespa-green hover:text-vespa-green-dark font-medium">
                     <span>Carica una foto</span>
-                    <input id="photo-upload" type="file" accept="image/*" className="sr-only" onChange={handlePhoto} />
+                    <input id="photo-upload" type="file" accept="image/*" multiple className="sr-only" onChange={handlePhoto} />
                   </label>
-                  <p className="text-xs">PNG, JPG fino a 10MB</p>
+                  <p className="text-xs">PNG, JPG fino a 10MB ciascuna · massimo 10 foto</p>
                 </div>
               </>
+            )}
+            {photoPreviews.length > 0 && (
+              <input id="photo-upload" type="file" accept="image/*" multiple className="sr-only" onChange={handlePhoto} />
             )}
           </div>
         </div>
@@ -250,7 +282,7 @@ export default function VespaForm({ onResult }) {
       {/* Submit */}
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || !user}
         className="cta-primary w-full rounded-2xl py-4 px-6 font-black transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:-translate-y-0.5"
       >
         {loading ? (
@@ -259,14 +291,21 @@ export default function VespaForm({ onResult }) {
             Analisi in corso...
           </>
         ) : (
-          'Identifica la mia Vespa'
+          user ? 'Identifica la mia Vespa' : 'Accedi per identificare la tua Vespa'
         )}
       </button>
 
       {!user && (
-        <p className="text-xs text-vespa-gray text-center">
-          Effettua il login per salvare i risultati nel tuo garage digitale.
-        </p>
+        <div className="rounded-3xl border border-vespa-gold/30 bg-vespa-gold/10 p-4 text-center">
+          <p className="text-sm font-bold text-vespa-black">Il tuo garage digitale ti aspetta.</p>
+          <p className="mt-1 text-xs leading-5 text-vespa-gray">
+            Accedi o crea l’account gratuito per iniziare l’identificazione e ritrovare ogni analisi sempre ordinata.
+          </p>
+          <div className="mt-3 flex justify-center gap-2">
+            <Link to="/login" className="rounded-full bg-white px-4 py-2 text-xs font-black text-vespa-black shadow-sm">Accedi</Link>
+            <Link to="/register" className="rounded-full bg-vespa-black px-4 py-2 text-xs font-black text-white shadow-sm">Crea account</Link>
+          </div>
+        </div>
       )}
     </form>
   )

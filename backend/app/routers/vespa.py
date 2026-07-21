@@ -2,6 +2,7 @@
 OcchioEsperto.it — Vespa analysis router.
 Endpoints for identifying, analyzing, and managing Vespa scooters.
 """
+import json
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File, Form
@@ -45,7 +46,9 @@ class IdentifyResponse(BaseModel):
     confidence: str = "low"
     match_type: str = "none"
     plan: str = "free"
-    requires_registration_for_full_report: bool = True
+    requires_registration_for_full_report: bool = False
+    garage_id: Optional[int] = None
+    photo_count: int = 0
     disclaimer: str = DISCLAIMER
 
 
@@ -121,7 +124,9 @@ async def identify_vespa(
     year: Optional[int] = Form(None),
     notes: Optional[str] = Form(None),
     photo: Optional[UploadFile] = File(None),
-    current_user: Optional[User] = Depends(get_optional_user),
+    photos: list[UploadFile] = File(default=[]),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
 ):
     """Identify a Vespa model from frame number, engine number, or photo."""
     plan = current_user.plan.value if current_user else UserPlan.FREE.value
@@ -130,7 +135,7 @@ async def identify_vespa(
         "confidence": "low",
         "match_type": "none",
         "plan": plan,
-        "requires_registration_for_full_report": current_user is None,
+        "requires_registration_for_full_report": False,
     }
 
     # Sanitize inputs
@@ -176,10 +181,16 @@ async def identify_vespa(
             result["match_type"] = "engine_number"
             result["model"] = matched_model
 
-    # Save photo if uploaded
-    photo_path = None
-    if photo and photo.filename:
-        photo_path = await save_upload_file(photo, subdir="identifications")
+    # Save up to 10 photos for this account-backed identification.
+    uploaded_photos = [p for p in ([photo] if photo and photo.filename else []) + list(photos or []) if p and p.filename]
+    if len(uploaded_photos) > 10:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Puoi caricare al massimo 10 fotografie per identificazione.",
+        )
+    photo_paths = []
+    for uploaded_photo in uploaded_photos:
+        photo_paths.append(await save_upload_file(uploaded_photo, subdir=f"identifications/user-{current_user.id}"))
 
     # If matched, provide basic identification
     if matched_model:
@@ -189,7 +200,7 @@ async def identify_vespa(
             "engine_cc": matched_model["engine_cc"],
         }
 
-    should_use_ai = bool(photo_path or notes or not matched_model or result["confidence"] != "high")
+    should_use_ai = bool(photo_paths or notes or not matched_model or result["confidence"] != "high")
     if should_use_ai:
         expert = ai_expert.enrich_identification(
             frame_number=frame_number,
@@ -197,10 +208,33 @@ async def identify_vespa(
             year=year,
             notes=notes,
             deterministic_match=match if matched_model else None,
-            photo_uploaded=bool(photo_path),
+            photo_uploaded=bool(photo_paths),
+            plan=plan,
+            analysis_depth="basic" if plan == UserPlan.FREE.value else "premium",
         )
         result["expert_analysis"] = expert
         result["confidence"] = expert.get("confidence", result["confidence"])
+        if not matched_model and expert.get("model_name"):
+            years = expert.get("years") or ""
+            start, end = None, None
+            if " - " in years:
+                parts = years.split(" - ", 1)
+                start = int(parts[0]) if parts[0].isdigit() else None
+                end = int(parts[1]) if parts[1].isdigit() else None
+            matched_model = {
+                "id": None,
+                "name": expert["model_name"],
+                "slug": None,
+                "production_start": start,
+                "production_end": end,
+                "engine_cc": expert.get("engine_cc") or "",
+            }
+            result["model"] = matched_model
+            result["identification"] = {
+                "model_name": matched_model["name"],
+                "years": years or "Da confermare",
+                "engine_cc": matched_model["engine_cc"] or "Da confermare",
+            }
     elif matched_model:
         result["expert_analysis"] = ai_expert.enrich_identification(
             frame_number=frame_number,
@@ -208,7 +242,27 @@ async def identify_vespa(
             year=year,
             deterministic_match=match,
             photo_uploaded=False,
+            plan=plan,
+            analysis_depth="basic" if plan == UserPlan.FREE.value else "premium",
         )
+
+    result["photo_count"] = len(photo_paths)
+    vespa = UserVespa(
+        user_id=current_user.id,
+        model_id=matched_model.get("id") if matched_model else None,
+        model_name=(matched_model.get("name") if matched_model else result.get("expert_analysis", {}).get("model_name")) or "Identificazione da completare",
+        model_slug=matched_model.get("slug") if matched_model else None,
+        year=year,
+        frame_number=frame_number,
+        engine_number=engine_number,
+        notes=notes,
+        photo_path=photo_paths[0] if photo_paths else None,
+        analysis_json=json.dumps({**result, "photo_paths": photo_paths}, ensure_ascii=False),
+    )
+    db.add(vespa)
+    db.commit()
+    db.refresh(vespa)
+    result["garage_id"] = vespa.id
 
     return IdentifyResponse(**result)
 
@@ -323,6 +377,8 @@ def get_garage(
                 "engine_number": v.engine_number,
                 "color_name": v.color_name,
                 "notes": v.notes,
+                "photo_path": v.photo_path,
+                "analysis": json.loads(v.analysis_json) if v.analysis_json else None,
                 "created_at": v.created_at.isoformat() if v.created_at else None,
             }
             for v in vespe

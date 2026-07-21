@@ -13,6 +13,8 @@ from .knowledge_base import knowledge_base, KnowledgeBase
 from ..config import (
     AI_APP_NAME,
     AI_MODEL_FALLBACKS,
+    AI_MODEL_FREE_FALLBACKS,
+    AI_MODEL_PREMIUM_FALLBACKS,
     AI_SITE_URL,
     DISCLAIMER,
     OPENROUTER_API_KEY,
@@ -40,6 +42,8 @@ class AIExpert:
         deterministic_match: Optional[Dict[str, Any]] = None,
         candidates: Optional[List[Dict[str, Any]]] = None,
         photo_uploaded: bool = False,
+        plan: str = "free",
+        analysis_depth: str = "basic",
     ) -> Dict[str, Any]:
         """Return an expert-style identification note, using OpenRouter when available."""
         context = {
@@ -50,10 +54,13 @@ class AIExpert:
             "photo_uploaded": photo_uploaded,
             "deterministic_match": deterministic_match,
             "candidates": candidates or [],
+            "plan": plan,
+            "analysis_depth": analysis_depth,
+            "local_prefix_hint": self._prefix_hint(frame_number),
         }
 
         if self.enabled:
-            ai_result = self._ask_openrouter(context)
+            ai_result = self._ask_openrouter(context, plan=plan)
             if ai_result:
                 return ai_result
 
@@ -98,7 +105,7 @@ class AIExpert:
 
         return self._fallback_question(question, model_id, model)
 
-    def _ask_openrouter(self, context: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def _ask_openrouter(self, context: Dict[str, Any], plan: str = "free") -> Optional[Dict[str, Any]]:
         prompt = {
             "task": "Identifica una Vespa come farebbe un perito/restauratore esperto.",
             "language": "it",
@@ -114,15 +121,16 @@ class AIExpert:
             },
             "rules": [
                 "Non forzare un modello se prefisso/telaio/motore non sono compatibili.",
-                "Se i dati sono insufficienti, dichiaralo chiaramente.",
+                "Se i dati sono parziali, dai comunque il miglior inquadramento tecnico possibile: modello/famiglia, cilindrata, periodo e verifiche consigliate.",
                 "Non presentare mai il risultato come certificato ufficiale Piaggio.",
+                "Non spiegare logiche interne, costi, credenziali, provider o flussi di pagamento.",
                 "Rispondi con JSON valido e nessun markdown fuori dal JSON.",
             ],
         }
-        return self._chat_json(prompt)
+        return self._chat_json(prompt, plan=plan)
 
-    def _chat_json(self, prompt: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-        for model in AI_MODEL_FALLBACKS:
+    def _chat_json(self, prompt: Dict[str, Any], plan: str = "free") -> Optional[Dict[str, Any]]:
+        for model in self._models_for_plan(plan):
             payload = {
                 "model": model,
                 "messages": [
@@ -157,24 +165,42 @@ class AIExpert:
                 continue
         return None
 
+    @staticmethod
+    def _models_for_plan(plan: str) -> List[str]:
+        if plan in {"intermedio", "avanzato"}:
+            return AI_MODEL_PREMIUM_FALLBACKS or AI_MODEL_FALLBACKS
+        return AI_MODEL_FREE_FALLBACKS or AI_MODEL_FALLBACKS
+
     def _fallback_identification(self, context: Dict[str, Any]) -> Dict[str, Any]:
         match = context.get("deterministic_match") or {}
         model_name = match.get("model_name") or match.get("name")
+        prefix_hint = self._prefix_hint(context.get("frame_number"))
         if model_name:
             summary = (
-                f"Dai dati inseriti il candidato più coerente è {model_name}. "
-                "Ho usato il confronto con il database locale di numeri telaio/motore; "
-                "per conferma controlla punzonatura, prefisso completo, libretto e dettagli costruttivi."
+                f"Il telaio è coerente con {model_name}. La prima lettura indica una Vespa da "
+                f"{match.get('engine_cc', 'cilindrata da confermare')}, prodotta nel periodo "
+                f"{match.get('production_start', '')}-{match.get('production_end') or 'oggi'}. "
+                "La conferma più solida arriva confrontando punzonature, libretto, motore e dettagli costruttivi."
+            )
+        elif prefix_hint:
+            model_name = prefix_hint["model_name"]
+            match = {"confidence": "medium"}
+            summary = (
+                f"Il prefisso telaio {prefix_hint['prefix']} indirizza verso {prefix_hint['model_name']}, "
+                f"una Vespa {prefix_hint['engine_cc']} del periodo {prefix_hint['years']}. "
+                "Per una lettura completa conviene verificare numero progressivo, motore abbinato, colore e dettagli di allestimento."
             )
         else:
             summary = (
-                "Non forzo un'identificazione: i dati inseriti non bastano per una corrispondenza affidabile nel database locale. "
-                "Aggiungi prefisso completo del telaio, numero motore, anno e foto nitida delle punzonature."
+                "La prima lettura ha bisogno di qualche indizio in più per essere davvero precisa. "
+                "Le foto delle punzonature, il numero motore e l’anno aiutano a distinguere varianti molto simili."
             )
         return {
             "expert_summary": summary,
             "confidence": match.get("confidence", "low"),
             "model_name": model_name,
+            "engine_cc": prefix_hint.get("engine_cc") if prefix_hint and not context.get("deterministic_match") else match.get("engine_cc"),
+            "years": prefix_hint.get("years") if prefix_hint and not context.get("deterministic_match") else None,
             "evidence": self._evidence_from_context(context),
             "alternatives": [],
             "recommended_checks": [
@@ -185,6 +211,20 @@ class AIExpert:
             "sources": ["Knowledge base OcchioEsperto"],
             "ai_provider": "local_fallback",
         }
+
+    @staticmethod
+    def _prefix_hint(frame_number: Optional[str]) -> Optional[Dict[str, str]]:
+        normalized = KnowledgeBase._normalize_number(frame_number or "")
+        prefix = KnowledgeBase._extract_code_prefix(normalized)
+        hints = {
+            "VN2T": {
+                "prefix": "VN2T",
+                "model_name": "Vespa 125 VN2T",
+                "engine_cc": "125 cc",
+                "years": "1956 - 1957",
+            },
+        }
+        return hints.get(prefix)
 
     def _fallback_question(self, question: str, model_id: int, model: Dict[str, Any]) -> dict:
         question_lower = question.lower()

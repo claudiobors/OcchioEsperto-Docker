@@ -10,8 +10,8 @@ export default function ResultsCard({ result, plan = 'free' }) {
 
   const badge = badges[plan] || badges.free
   const modelName = result.model?.name || result.modello
-  const productionYears = result.identification?.years || result.anno
-  const engineCc = result.identification?.engine_cc || result.model?.engine_cc
+  const productionYears = result.identification?.years || result.expert_analysis?.years || result.anno
+  const engineCc = result.identification?.engine_cc || result.model?.engine_cc || result.expert_analysis?.engine_cc
   const confidenceLabel = {
     high: 'Alta',
     medium: 'Media',
@@ -115,11 +115,12 @@ export default function ResultsCard({ result, plan = 'free' }) {
               <Gauge className="h-5 w-5 text-vespa-gold" />
               <p className="font-bold">Vuoi la scheda completa?</p>
             </div>
-            <p className="mt-2 text-sm leading-6 text-vespa-cream/65">
-              Prima crea un account: così salviamo credenziali, consenso e scheda nel tuo garage. Poi puoi pagare la scheda completa.
+            <p className="mt-2 text-sm leading-6 text-vespa-cream/70">
+              per avere maggiori informazioni, registrati. La scheda completa apre il confronto colore,
+              i range dei numeri telaio e motore, i dettagli storici e altri dati utili per capire meglio la tua Vespa.
             </p>
             <a href="/register?plan=avanzato" className="mt-4 inline-flex rounded-full bg-white px-4 py-2 text-sm font-black text-vespa-black transition-transform hover:-translate-y-0.5">
-              Registrati e sblocca →
+              Scopri la scheda completa →
             </a>
           </div>
         )}
