@@ -47,6 +47,14 @@ def decode_access_token(token: str) -> Optional[dict]:
         return None
 
 
+def _parse_user_id(value: object) -> Optional[int]:
+    """Return a numeric user id from a JWT subject, or None for stale/invalid tokens."""
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db),
@@ -60,14 +68,14 @@ async def get_current_user(
             detail="Token non valido o scaduto",
         )
 
-    user_id = payload.get("sub")
+    user_id = _parse_user_id(payload.get("sub"))
     if user_id is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token non valido",
         )
 
-    user = db.query(User).filter(User.id == int(user_id)).first()
+    user = db.query(User).filter(User.id == user_id).first()
     if user is None or not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -99,7 +107,7 @@ async def get_optional_user(
     payload = decode_access_token(credentials.credentials)
     if payload is None:
         return None
-    user_id = payload.get("sub")
+    user_id = _parse_user_id(payload.get("sub"))
     if user_id is None:
         return None
-    return db.query(User).filter(User.id == int(user_id)).first()
+    return db.query(User).filter(User.id == user_id).first()
