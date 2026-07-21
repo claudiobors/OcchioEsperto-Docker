@@ -87,18 +87,22 @@ export default function VespaForm({ onResult }) {
     try {
       const formPayload = new FormData()
       if (photo) formPayload.append('photo', photo)
-      formPayload.append('telaio', formData.telaio)
-      formPayload.append('motore', formData.motore)
-      formPayload.append('immatricolazione', formData.immatricolazione)
-      formPayload.append('note', formData.note)
+      if (formData.telaio) formPayload.append('frame_number', formData.telaio)
+      if (formData.motore) formPayload.append('engine_number', formData.motore)
+      if (formData.immatricolazione) {
+        formPayload.append('year', new Date(formData.immatricolazione).getFullYear().toString())
+      }
 
-      const res = await api.post('/analyze', formPayload, {
+      const res = await api.post('/vespa/identify', formPayload, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       onResult?.(res.data)
-      addToast('Analisi completata con successo!', 'success')
+      addToast('Identificazione completata con successo!', 'success')
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Errore durante l\'analisi. Riprova.'
+      const detail = err.response?.data?.detail
+      const msg = Array.isArray(detail)
+        ? detail.map((item) => item.msg).join(', ')
+        : detail || 'Errore durante l\'identificazione. Riprova.'
       setError(msg)
       addToast(msg, 'error')
     } finally {

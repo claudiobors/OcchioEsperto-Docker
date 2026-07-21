@@ -1,4 +1,4 @@
-import { CheckCircle, AlertTriangle, XCircle, ExternalLink } from 'lucide-react'
+import { CheckCircle, AlertTriangle, XCircle } from 'lucide-react'
 
 const badges = {
   free: { label: 'Base', class: 'bg-vespa-cream-dark text-vespa-black' },
@@ -9,6 +9,15 @@ export default function ResultsCard({ result, plan = 'free' }) {
   if (!result) return null
 
   const badge = badges[plan] || badges.free
+  const modelName = result.model?.name || result.modello
+  const productionYears = result.identification?.years || result.anno
+  const engineCc = result.identification?.engine_cc || result.model?.engine_cc
+  const confidenceLabel = {
+    high: 'Alta',
+    medium: 'Media',
+    low: 'Bassa',
+  }[result.confidence] || result.confidence
+  const confidencePercent = result.confidenza
 
   return (
     <div className="animate-scale-in bg-white rounded-2xl border border-vespa-cream-dark overflow-hidden hover:shadow-md transition-all duration-300">
@@ -16,15 +25,20 @@ export default function ResultsCard({ result, plan = 'free' }) {
       <div className="p-6 border-b border-vespa-cream-dark">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-heading text-xl font-bold text-vespa-black">
-            {result.modello || 'Vespa identificata'}
+            {modelName || 'Nessuna corrispondenza certa'}
           </h3>
           <span className={`text-xs font-medium px-3 py-1 rounded-full ${badge.class}`}>
             {badge.label}
           </span>
         </div>
-        {result.anno && (
+        {productionYears && (
           <p className="text-vespa-gray text-sm">
-            Anno: <span className="font-semibold text-vespa-black">{result.anno}</span>
+            Anni: <span className="font-semibold text-vespa-black">{productionYears}</span>
+          </p>
+        )}
+        {engineCc && (
+          <p className="text-vespa-gray text-sm">
+            Motore: <span className="font-semibold text-vespa-black">{engineCc} cc</span>
           </p>
         )}
       </div>
@@ -32,17 +46,28 @@ export default function ResultsCard({ result, plan = 'free' }) {
       {/* Body */}
       <div className="p-6 space-y-4">
         {/* Model confidence */}
-        {result.confidenza && (
+        {(confidencePercent || confidenceLabel) && (
           <div className="flex items-center gap-2">
-            {result.confidenza > 80 ? (
+            {confidencePercent ? (
+              confidencePercent > 80 ? (
+                <CheckCircle className="w-5 h-5 text-vespa-green" />
+              ) : confidencePercent > 50 ? (
+                <AlertTriangle className="w-5 h-5 text-vespa-gold" />
+              ) : (
+                <XCircle className="w-5 h-5 text-vespa-red" />
+              )
+            ) : result.confidence === 'high' ? (
               <CheckCircle className="w-5 h-5 text-vespa-green" />
-            ) : result.confidenza > 50 ? (
+            ) : result.confidence === 'medium' ? (
               <AlertTriangle className="w-5 h-5 text-vespa-gold" />
             ) : (
               <XCircle className="w-5 h-5 text-vespa-red" />
             )}
             <span className="text-sm text-vespa-gray">
-              Confidenza: <span className="font-semibold text-vespa-black">{result.confidenza}%</span>
+              Confidenza:{' '}
+              <span className="font-semibold text-vespa-black">
+                {confidencePercent ? `${confidencePercent}%` : confidenceLabel}
+              </span>
             </span>
           </div>
         )}
