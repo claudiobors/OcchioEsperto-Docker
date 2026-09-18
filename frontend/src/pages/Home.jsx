@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Search, ShieldCheck, Camera, Gauge, CheckCircle2, Sparkles, Gem, Wrench, BadgeEuro, ClipboardCheck } from 'lucide-react'
+import { ArrowRight, Search, ShieldCheck, Camera, Gauge, Sparkles, Gem, Wrench, BadgeEuro, ClipboardCheck } from 'lucide-react'
 import PricingCards from '../components/PricingCards'
 
 function ScrollRevealSection({ children, className = '' }) {
@@ -51,6 +51,13 @@ const benefits = [
   { icon: ShieldCheck, title: 'Più fiducia prima di comprare', text: 'Eviti Vespe raccontate male, restauri incoerenti e stime gonfiate.' },
   { icon: Wrench, title: 'Pensato per restauratori', text: 'Colori storici, range telaio/motore e checklist originalità quando ti serve il dettaglio.' },
   { icon: BadgeEuro, title: 'Prezzo più difendibile', text: 'La stima di mercato rende più facile trattare, vendere o assicurare il mezzo.' },
+]
+
+const ambientShots = [
+  { src: '/vespa-ambient-1.svg', title: 'Classic line', caption: 'Serio, elegante, iconico.' },
+  { src: '/vespa-ambient-2.svg', title: 'Workshop mood', caption: 'Archivio + diagnosi.' },
+  { src: '/vespa-ambient-3.svg', title: 'Vision AI', caption: 'Dettagli e originalità.' },
+  { src: '/vespa-ambient-4.svg', title: 'Vintage finish', caption: 'Atmosfera da collezione.' },
 ]
 
 export default function Home() {
@@ -105,9 +112,9 @@ export default function Home() {
             <div className="relative animate-fade-in-up-delay-2">
               <div className="absolute -inset-8 rounded-[3rem] bg-vespa-green/20 blur-3xl" />
               <img
-                src="/static/hero-vespa.svg"
+                src="/vespa-ambient-1.svg"
                 alt="Illustrazione premium di una Vespa classica analizzata da OcchioEsperto"
-                className="relative w-full rounded-[2.5rem] border border-white/12 shadow-[0_40px_120px_rgba(0,0,0,0.45)]"
+                className="cinematic-image relative w-full rounded-[2.5rem] border border-white/12 shadow-[0_40px_120px_rgba(0,0,0,0.45)]"
               />
               <div className="absolute -bottom-6 left-6 right-6 rounded-3xl border border-white/12 bg-white/90 p-5 text-vespa-black shadow-2xl backdrop-blur md:left-auto md:w-80">
                 <div className="flex items-center justify-between gap-4">
@@ -194,11 +201,73 @@ export default function Home() {
               <div className="relative">
                 <div className="absolute -inset-8 rounded-[3rem] bg-vespa-gold/10 blur-3xl" />
                 <img
-                  src="/static/workshop-detail.svg"
+                  src="/vespa-ambient-2.svg"
                   alt="Scheda tecnica illustrata con dettagli storici Vespa"
                   className="relative w-full rounded-[2.5rem] border border-white/12 shadow-[0_38px_110px_rgba(0,0,0,0.42)]"
                 />
               </div>
+            </div>
+          </div>
+        </section>
+      </ScrollRevealSection>
+
+      <ScrollRevealSection>
+        <section className="py-20 sm:py-24 bg-white/55">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <div className="max-w-2xl">
+                <p className="text-sm font-black uppercase tracking-[0.24em] text-vespa-green">Moodboard AI</p>
+                <h2 className="mt-3 font-heading text-4xl sm:text-5xl font-bold text-vespa-black">
+                  Sfondi e immagini da collezione, costruiti per la tua Vespa.
+                </h2>
+              </div>
+              <p className="max-w-md text-vespa-gray">
+                Una serie di ambientazioni vettoriali ai, pensate per mettere in scena la storia, il restauro e il valore delle Vespa.
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+              {ambientShots.map((shot) => (
+                <div key={shot.title} className="group overflow-hidden rounded-[2rem] border border-vespa-cream-dark bg-white shadow-[0_18px_54px_rgba(9,13,18,0.09)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_30px_80px_rgba(9,13,18,0.14)]">
+                  <div className="overflow-hidden">
+                    <img src={shot.src} alt={shot.title} className="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  </div>
+                  <div className="p-5">
+                    <p className="text-sm font-black uppercase tracking-[0.18em] text-vespa-green">{shot.title}</p>
+                    <p className="mt-2 text-sm text-vespa-gray">{shot.caption}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </ScrollRevealSection>
+
+      <ScrollRevealSection>
+        <section className="px-4 py-20 sm:px-6 lg:px-8">
+          <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[2.5rem] dark-panel shadow-[0_35px_110px_rgba(9,13,18,0.24)]">
+            <img
+              src="/vespa-ambient-3.svg"
+              alt="Vespa classica in un ambiente di analisi AI"
+              className="cinematic-image absolute inset-0 h-full w-full object-cover opacity-45"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-vespa-black via-vespa-black/85 to-transparent" />
+            <div className="relative max-w-3xl px-7 py-12 sm:px-14 sm:py-16">
+              <p className="text-sm font-black uppercase tracking-[0.24em] text-vespa-gold-light">Report da collezione</p>
+              <h2 className="mt-4 font-heading text-4xl font-bold leading-tight text-white sm:text-5xl">
+                Ogni risposta diventa una scheda che vale la pena conservare.
+              </h2>
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-vespa-cream/75">
+                Identificazione, confidenza, dati storici e prossimi controlli: tutto raccolto in un report leggibile,
+                pronto per il tuo garage digitale.
+              </p>
+              <Link
+                to="/analisi"
+                className="cta-primary mt-8 inline-flex items-center justify-center gap-2 rounded-2xl px-7 py-4 text-base font-bold transition-transform hover:-translate-y-0.5"
+              >
+                Crea il mio report
+                <ArrowRight className="h-5 w-5" />
+              </Link>
             </div>
           </div>
         </section>

@@ -43,14 +43,20 @@ OPENROUTER_BASE_URL = os.environ.get("OPENROUTER_BASE_URL", "https://openrouter.
 OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "")
 OPENROUTER_MODEL_FREE = os.environ.get("OPENROUTER_MODEL_FREE", "")
 OPENROUTER_MODELS_PREMIUM = os.environ.get("OPENROUTER_MODELS_PREMIUM", "")
+DEFAULT_AI_MODELS = [
+    "openai/gpt-4.1-mini",
+    "anthropic/claude-3.5-sonnet",
+    "google/gemini-2.0-flash-001",
+    "x-ai/grok-3-mini",
+]
 AI_MODEL_FALLBACKS = [
-    m.strip() for m in os.environ.get("AI_MODEL_FALLBACKS", OPENROUTER_MODEL).split(",") if m.strip()
+    m.strip() for m in os.environ.get("AI_MODEL_FALLBACKS", ",".join(DEFAULT_AI_MODELS) if not OPENROUTER_MODEL else OPENROUTER_MODEL).split(",") if m.strip()
 ]
 AI_MODEL_FREE_FALLBACKS = [
-    m.strip() for m in os.environ.get("AI_MODEL_FREE_FALLBACKS", OPENROUTER_MODEL_FREE or OPENROUTER_MODEL).split(",") if m.strip()
+    m.strip() for m in os.environ.get("AI_MODEL_FREE_FALLBACKS", OPENROUTER_MODEL_FREE or OPENROUTER_MODEL or ",".join(DEFAULT_AI_MODELS[:2])).split(",") if m.strip()
 ]
 AI_MODEL_PREMIUM_FALLBACKS = [
-    m.strip() for m in os.environ.get("AI_MODEL_PREMIUM_FALLBACKS", OPENROUTER_MODELS_PREMIUM or OPENROUTER_MODEL).split(",") if m.strip()
+    m.strip() for m in os.environ.get("AI_MODEL_PREMIUM_FALLBACKS", OPENROUTER_MODELS_PREMIUM or OPENROUTER_MODEL or ",".join(DEFAULT_AI_MODELS)).split(",") if m.strip()
 ]
 AI_SITE_URL = os.environ.get("AI_SITE_URL", os.environ.get("PUBLIC_SITE_URL", "https://occhioesperto.it"))
 AI_APP_NAME = os.environ.get("AI_APP_NAME", "OcchioEsperto.it")

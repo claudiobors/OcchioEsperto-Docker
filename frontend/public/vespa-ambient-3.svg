@@ -1,0 +1,35 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg3" x1="110" y1="42" x2="1095" y2="699" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A0F14"/>
+      <stop offset="0.44" stop-color="#1E2A39"/>
+      <stop offset="1" stop-color="#0D1217"/>
+    </linearGradient>
+    <radialGradient id="spot3" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(560 214) rotate(90) scale(322 460)">
+      <stop stop-color="#F5D58A" stop-opacity="0.72"/>
+      <stop offset="1" stop-color="#F5D58A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="760" rx="40" fill="url(#bg3)"/>
+  <circle cx="594" cy="210" r="324" fill="url(#spot3)"/>
+  <g opacity="0.5">
+    <path d="M89 583C166 520 258 479 358 459C475 437 598 444 706 472C800 496 931 540 1094 610V760H89V583Z" fill="#2F6FAD" fill-opacity="0.16"/>
+    <path d="M205 657C345 519 490 450 649 447C789 444 943 517 1095 655" stroke="#D8A445" stroke-opacity="0.33" stroke-width="3"/>
+  </g>
+  <g opacity="0.97">
+    <path d="M212 470C240 404 291 350 365 319L558 252C612 233 679 235 732 260L841 308C894 333 928 380 944 430L966 504H208L212 470Z" fill="#D8A445"/>
+    <path d="M278 307C323 256 383 221 457 208L576 186C648 174 720 182 782 218C827 245 853 286 859 334L767 412L571 399L445 395L278 307Z" fill="#F8F3E8"/>
+    <path d="M415 216L342 116C332 100 336 79 355 69L423 29" stroke="#F8F3E8" stroke-width="20" stroke-linecap="round"/>
+    <path d="M748 246L800 167C813 148 836 142 852 157L904 209" stroke="#F8F3E8" stroke-width="18" stroke-linecap="round"/>
+  </g>
+  <g opacity="0.9">
+    <circle cx="300" cy="563" r="90" fill="#0E1520" stroke="#F5D58A" stroke-width="18"/>
+    <circle cx="300" cy="563" r="42" fill="#E9E4DC" stroke="#D8A445" stroke-width="10"/>
+    <circle cx="778" cy="563" r="90" fill="#0E1520" stroke="#F5D58A" stroke-width="18"/>
+    <circle cx="778" cy="563" r="42" fill="#E9E4DC" stroke="#D8A445" stroke-width="10"/>
+  </g>
+  <g opacity="0.88">
+    <rect x="83" y="82" width="152" height="42" rx="20" fill="#F8F3E8" fill-opacity="0.08" stroke="#F8F3E8" stroke-opacity="0.23"/>
+    <text x="106" y="109" fill="#F8F3E8" font-family="Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="2">AI VISION</text>
+  </g>
+</svg>

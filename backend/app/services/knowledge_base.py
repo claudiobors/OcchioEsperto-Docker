@@ -334,11 +334,23 @@ class KnowledgeBase:
             row["match_type"] = match_type
             row["confidence"] = "high" if score >= 90 else "medium" if score >= 55 else "low"
             row["match_score"] = score
+            row["exact_prefix_match"] = self._has_exact_prefix_match(row, input_prefix)
+            row["family_prefix_match"] = self._has_family_prefix_match(row, input_prefix)
             candidates.append(row)
 
         if not candidates:
             return None
-        candidates.sort(key=lambda r: (-r["match_score"], r["production_start"], r["model_name"]))
+
+        if input_prefix:
+            exact_candidates = [c for c in candidates if c["exact_prefix_match"]]
+            if exact_candidates:
+                candidates = exact_candidates
+            else:
+                family_candidates = [c for c in candidates if c["family_prefix_match"]]
+                if family_candidates:
+                    candidates = family_candidates
+
+        candidates.sort(key=lambda r: (-r["match_score"], -int(r["exact_prefix_match"]), -int(r["family_prefix_match"]), r["production_start"], r["model_name"]))
         return candidates[0]
 
     def _score_number_row(
@@ -357,22 +369,41 @@ class KnowledgeBase:
         start_num = self._extract_numeric(start)
         end_num = self._extract_numeric(end)
         row_has_prefix = bool(start_prefix or end_prefix)
+
+        family_hints = []
+        if input_prefix:
+            family_hints.append(input_prefix)
+            family_hints.append(re.sub(r'\d+[A-Z]*$', '', input_prefix))
+            family_hints.append(re.sub(r'[A-Z]*\d+$', '', input_prefix))
+            family_hints = [h for h in family_hints if h]
+        note_prefix_match = bool(input_prefix and any(h in notes for h in family_hints))
+        prefix_family_match = bool(input_prefix and any(
+            input_prefix == p or p.startswith(input_prefix) or input_prefix.startswith(p)
+            for p in [start_prefix, end_prefix] if p
+        ))
+
         score = 0
 
         if row_has_prefix:
             prefixes = [p for p in [start_prefix, end_prefix] if p]
-            if input_prefix and any(normalized.startswith(p) or p.startswith(input_prefix) for p in prefixes):
-                score = 80
+            if input_prefix and any(normalized.startswith(p) or p.startswith(input_prefix) or input_prefix.startswith(p) for p in prefixes):
+                score = 88
+            elif input_prefix and note_prefix_match:
+                score = 82
             else:
                 return 0
         elif start_num is not None and end_num is not None and numeric_part is not None:
-            note_prefix_match = input_prefix and input_prefix in notes
             if input_prefix and not note_prefix_match:
                 return 0
             if start_num <= numeric_part <= end_num:
                 score = 65 if not input_prefix else 88
+            elif input_prefix and note_prefix_match:
+                score = 84
         elif start and start in normalized:
             score = 45
+
+        if not score and input_prefix and note_prefix_match:
+            score = 84
 
         if score and year:
             if row.get("year_start") and row.get("year_end") and row["year_start"] <= year <= row["year_end"]:
@@ -380,6 +411,35 @@ class KnowledgeBase:
             else:
                 score -= 18
         return max(score, 0)
+
+    @staticmethod
+    def _has_exact_prefix_match(row: Dict[str, Any], input_prefix: str) -> bool:
+        if not input_prefix:
+            return False
+        candidate_texts = [
+            row.get("notes") or "",
+            row.get("number_start") or "",
+            row.get("number_end") or "",
+            row.get("model_name") or "",
+        ]
+        normalized_input = KnowledgeBase._normalize_number(input_prefix)
+        return any(normalized_input in KnowledgeBase._normalize_number(text) for text in candidate_texts)
+
+    @staticmethod
+    def _has_family_prefix_match(row: Dict[str, Any], input_prefix: str) -> bool:
+        if not input_prefix:
+            return False
+        candidate_texts = [
+            row.get("notes") or "",
+            row.get("number_start") or "",
+            row.get("number_end") or "",
+            row.get("model_name") or "",
+        ]
+        normalized_input = KnowledgeBase._normalize_number(input_prefix)
+        abbreviated = re.sub(r'\d+', '', normalized_input)
+        if not abbreviated:
+            return False
+        return any(abbreviated in KnowledgeBase._normalize_number(text) for text in candidate_texts)
 
     @staticmethod
     def _extract_numeric(s: str) -> Optional[int]:
@@ -394,12 +454,32 @@ class KnowledgeBase:
 
     @staticmethod
     def _extract_code_prefix(s: str) -> str:
-        """Extract Vespa-style prefix before the long serial, e.g. VLA1T from VLA1T123456."""
-        match = re.match(r'^([A-Z0-9]*[TM])\d*$', s or '')
+        """Extract the actual Vespa prefix before the numeric serial sequence.
+
+        Typical stamped codes look like VLA1T12345, VMB1T12345, PX125M1, V5A1T12345 or ZAPM0401.
+        The model code is the prefix before the long numeric series, not the whole serial.
+        """
+        normalized = re.sub(r'[^A-Z0-9]', '', (s or '').upper())
+        if not normalized:
+            return ""
+
+        # The model code is the maximal prefix that ends with a letter and is immediately followed
+        # by a numeric serial tail. Typical examples: VLA1T12345 -> VLA1T, V5A1T12345 -> V5A1T.
+        match = re.match(r'^([A-Z0-9]*[A-Z])(?=\d)', normalized)
         if match:
             return match.group(1)
-        match = re.match(r'^([A-Z]+\d*)', s or '')
-        return match.group(1) if match else ""
+
+        # Some suffixes are just the code itself, e.g. VN2T or V5A1T without a numeric tail.
+        match = re.match(r'^([A-Z0-9]*[TM])$', normalized)
+        if match:
+            return match.group(1)
+
+        # Fallback for pure letter-style prefixes before a numeric serial, e.g. ZAPM0401 -> ZAPM.
+        match = re.match(r'^([A-Z]+)(?=\d)', normalized)
+        if match:
+            return match.group(1)
+
+        return ""
 
     @staticmethod
     def _extract_alpha_prefix(s: str) -> str:

@@ -223,6 +223,60 @@ class AIExpert:
                 "engine_cc": "125 cc",
                 "years": "1956 - 1957",
             },
+            "VLA1T": {
+                "prefix": "VLA1T",
+                "model_name": "Vespa Sprint (VLA1T)",
+                "engine_cc": "150 cc",
+                "years": "1965 - 1971",
+            },
+            "VBC1T": {
+                "prefix": "VBC1T",
+                "model_name": "Vespa Sprint Veloce (VBC)",
+                "engine_cc": "125 cc",
+                "years": "1969 - 1973",
+            },
+            "VSD1T": {
+                "prefix": "VSD1T",
+                "model_name": "Vespa Rally 180 (VSD1T)",
+                "engine_cc": "180 cc",
+                "years": "1965 - 1972",
+            },
+            "VSE1T": {
+                "prefix": "VSE1T",
+                "model_name": "Vespa Rally 200 (VSE1T)",
+                "engine_cc": "200 cc",
+                "years": "1972 - 1976",
+            },
+            "V5A1T": {
+                "prefix": "V5A1T",
+                "model_name": "Vespa 50 (V5A1T)",
+                "engine_cc": "50 cc",
+                "years": "1963 - 1975",
+            },
+            "VMA1T": {
+                "prefix": "VMA1T",
+                "model_name": "Vespa 125 Nuova (VMA1T)",
+                "engine_cc": "125 cc",
+                "years": "1971 - 1978",
+            },
+            "VMA2T": {
+                "prefix": "VMA2T",
+                "model_name": "Vespa Primavera 125 (VMA2T)",
+                "engine_cc": "125 cc",
+                "years": "1968 - 1971",
+            },
+            "VMB1T": {
+                "prefix": "VMB1T",
+                "model_name": "Vespa Primavera ET3 (VMB1T)",
+                "engine_cc": "125 cc",
+                "years": "1971 - 1983",
+            },
+            "VLB1T": {
+                "prefix": "VLB1T",
+                "model_name": "Vespa 150 Super (VLA/VLB)",
+                "engine_cc": "150 cc",
+                "years": "1965 - 1970",
+            },
         }
         return hints.get(prefix)
 

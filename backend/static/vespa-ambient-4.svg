@@ -1,0 +1,36 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg4" x1="149" y1="74" x2="996" y2="666" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#101921"/>
+      <stop offset="0.4" stop-color="#19304A"/>
+      <stop offset="1" stop-color="#0A0E13"/>
+    </linearGradient>
+    <linearGradient id="vespa4" x1="262" y1="282" x2="891" y2="534" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7E4B2"/>
+      <stop offset="0.5" stop-color="#D8A445"/>
+      <stop offset="1" stop-color="#2F6FAD"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="760" rx="42" fill="url(#bg4)"/>
+  <g opacity="0.45">
+    <circle cx="263" cy="171" r="118" fill="#D8A445" fill-opacity="0.2"/>
+    <circle cx="936" cy="198" r="156" fill="#2F6FAD" fill-opacity="0.26"/>
+    <circle cx="854" cy="560" r="164" fill="#D8A445" fill-opacity="0.14"/>
+  </g>
+  <g opacity="0.95">
+    <path d="M259 500C260 418 309 361 395 337L582 284C639 268 697 269 751 287L855 322C907 340 944 382 955 433L972 516H270L259 500Z" fill="url(#vespa4)"/>
+    <path d="M431 328C458 270 510 224 584 204C651 186 720 202 774 243L826 286L693 336L560 338L431 328Z" fill="#F8F3E8"/>
+    <path d="M512 182L438 96C429 84 430 66 442 58L501 17" stroke="#F8F3E8" stroke-width="18" stroke-linecap="round"/>
+    <path d="M753 233L828 155C844 138 869 138 884 155L926 197" stroke="#F8F3E8" stroke-width="16" stroke-linecap="round"/>
+  </g>
+  <g opacity="0.9">
+    <circle cx="302" cy="602" r="84" fill="#0B1117" stroke="#F5D58A" stroke-width="16"/>
+    <circle cx="302" cy="602" r="36" fill="#F4F0EA" stroke="#D8A445" stroke-width="8"/>
+    <circle cx="810" cy="602" r="84" fill="#0B1117" stroke="#F5D58A" stroke-width="16"/>
+    <circle cx="810" cy="602" r="36" fill="#F4F0EA" stroke="#D8A445" stroke-width="8"/>
+  </g>
+  <g opacity="0.86">
+    <rect x="84" y="90" width="176" height="42" rx="20" fill="#F8F3E8" fill-opacity="0.08" stroke="#F8F3E8" stroke-opacity="0.24"/>
+    <text x="107" y="118" fill="#F8F3E8" font-family="Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="2">VINTAGE AI</text>
+  </g>
+</svg>
