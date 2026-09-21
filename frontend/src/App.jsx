@@ -11,17 +11,27 @@ import Pricing from './pages/Pricing'
 import Terms from './pages/Terms'
 import Privacy from './pages/Privacy'
 import NotFound from './pages/NotFound'
+import AuthLayout from './components/AuthLayout'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+
+function RoutePosition() {
+  const { pathname } = useLocation()
+  useEffect(() => { window.scrollTo({ top: 0, behavior: 'instant' }) }, [pathname])
+  return null
+}
 
 function App() {
   return (
     <ToastProvider>
+      <RoutePosition />
       <div className="oe-shell min-h-screen flex flex-col">
         <Navbar />
-        <main className="flex-1">
+        <main id="main-content" tabIndex={-1} className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<AuthLayout><Login /></AuthLayout>} />
+            <Route path="/register" element={<AuthLayout><Register /></AuthLayout>} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/analisi" element={<Analisi />} />
             <Route path="/pricing" element={<Pricing />} />

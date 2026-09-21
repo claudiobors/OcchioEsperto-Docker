@@ -79,15 +79,15 @@ export default function Register() {
 
         {selectedPlan && (
           <div className="mb-5 rounded-2xl border border-vespa-green/20 bg-vespa-green/5 p-4 text-sm leading-6 text-vespa-gray">
-            <strong className="text-vespa-black">Flusso chiaro:</strong> registrazione obbligatoria → consenso e credenziali → pagamento → scheda completa salvata nel garage.
+            <strong className="text-vespa-black">Il tuo approfondimento:</strong> {selectedPlan === 'avanzato' ? 'Premium · 9,99 €' : 'Intermedio · 4,99 €'} per analisi. Dopo la registrazione potrai completare il pagamento.
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-vespa-cream-dark p-8 space-y-5">
           <div>
-            <label className="block text-sm font-medium text-vespa-black mb-1">Nome</label>
+            <label htmlFor="account-name" className="block text-sm font-medium text-vespa-black mb-1">Nome</label>
             <input
-              type="text"
+              id="account-name" autoComplete="name" type="text"
               value={name}
               onChange={(e) => { setName(e.target.value); setErrors((p) => ({...p, name: ''})) }}
               required
@@ -102,9 +102,9 @@ export default function Register() {
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-vespa-black mb-1">Email</label>
+            <label htmlFor="account-email" className="block text-sm font-medium text-vespa-black mb-1">Email</label>
             <input
-              type="email"
+              id="account-email" autoComplete="email" type="email"
               value={email}
               onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({...p, email: ''})) }}
               onBlur={() => {
@@ -122,10 +122,10 @@ export default function Register() {
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-vespa-black mb-1">Password</label>
+            <label htmlFor="account-password" className="block text-sm font-medium text-vespa-black mb-1">Password</label>
             <div className="relative">
               <input
-                type={showPassword ? 'text' : 'password'}
+                id="account-password" autoComplete="new-password" type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({...p, password: ''})) }}
                 required
@@ -135,7 +135,7 @@ export default function Register() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? 'Nascondi password' : 'Mostra password'} aria-pressed={showPassword} onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-vespa-gray-light hover:text-vespa-gray"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}

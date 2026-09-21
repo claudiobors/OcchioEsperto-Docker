@@ -2,7 +2,7 @@ import { Lock, Eye, Trash2 } from 'lucide-react'
 
 export default function Privacy() {
   return (
-    <div className="min-h-[calc(100vh-4rem)] py-16 px-4">
+    <div className="legal-page min-h-[calc(100vh-4rem)] py-16 px-4">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-vespa-green/10 flex items-center justify-center">

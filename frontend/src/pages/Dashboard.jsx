@@ -1,9 +1,10 @@
-import { useCallback, useState, useEffect } from 'react'
+import { useCallback, useState, useEffect, useRef } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { Link } from 'react-router-dom'
 import GarageGrid from '../components/GarageGrid'
 import LeadForm from '../components/LeadForm'
 import { StatsCardSkeleton, GarageGridSkeleton } from '../components/Skeletons'
-import { Bike, Clock, Award, TrendingUp, X, FileText, Sparkles, Upload, Save, ShoppingBag } from 'lucide-react'
+import { Bike, Clock, Award, TrendingUp, X, FileText, ScanLine, Upload, Save, ShoppingBag, ArrowUpRight, Camera } from 'lucide-react'
 
 export default function Dashboard() {
   const { user, api } = useAuth()
@@ -12,6 +13,34 @@ export default function Dashboard() {
   const [nameDraft, setNameDraft] = useState('')
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
+  const dialogRef = useRef(null)
+  const selectedId = selected?.id
+
+  useEffect(() => {
+    const dialog = dialogRef.current
+    if (!selectedId || !dialog) return
+    const previousFocus = document.activeElement
+    if (!dialog.open) dialog.showModal()
+    return () => {
+      if (dialog.open) dialog.close()
+      if (previousFocus instanceof HTMLElement && previousFocus.isConnected) previousFocus.focus()
+    }
+  }, [selectedId])
+
+  const keepDialogFocus = (event) => {
+    if (event.key !== 'Tab') return
+    const controls = [...event.currentTarget.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]')]
+      .filter((element) => element.getClientRects().length > 0)
+    const first = controls[0]
+    const last = controls[controls.length - 1]
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last?.focus()
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first?.focus()
+    }
+  }
 
   const refreshGarage = useCallback(() => api.get('/vespa/garage').then((res) => {
     const items = res.data.vespe || []
@@ -80,15 +109,10 @@ export default function Dashboard() {
 
   if (!user) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center">
-        <div className="text-center animate-fade-in-up">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-vespa-cream-dark flex items-center justify-center">
-            <Bike className="w-10 h-10 text-vespa-gray-light" />
-          </div>
-          <h2 className="font-heading text-2xl font-bold text-vespa-black mb-4">Accedi per vedere il tuo garage</h2>
-          <p className="text-vespa-gray">Effettua il login per visualizzare le tue Vespe salvate.</p>
-        </div>
-      </div>
+      <section className="content-width garage-gate">
+        <div><h1>Le tue Vespa.<br /><em>Le loro storie.</em><br />Il tuo garage.</h1><p>Un luogo per custodire fotografie, identificazioni e approfondimenti. Accedi per ritrovare le tue schede o crea il tuo garage gratuito.</p><Link to="/login" className="button button-green">Accedi al garage <ArrowUpRight size={18} /></Link><Link to="/register" className="text-link">Crea account</Link></div>
+        <figure><img src={`${import.meta.env.BASE_URL}images/collector-studio.webp`} alt="Scooter storico in atelier, immagine illustrativa generata con AI" width="1536" height="1024" /><figcaption>La tua collezione comincia da una scoperta. Immagine AI illustrativa.</figcaption></figure>
+      </section>
     )
   }
 
@@ -97,21 +121,21 @@ export default function Dashboard() {
     : null
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      <div className="mb-8 animate-fade-in-up">
-        <h1 className="font-heading text-3xl font-bold text-vespa-black">Il mio garage</h1>
-        <p className="text-vespa-gray text-sm mt-1">Benvenuto, {user.name}</p>
+    <div className="content-width garage-page">
+      <div className="garage-heading">
+        <div><h1>Il mio garage.</h1><p className="text-vespa-gray text-sm mt-3">Benvenuto, {user.name}. Ogni scoperta trova il suo posto.</p></div>
+        <Link to="/analisi" className="button button-green">Aggiungi una Vespa <ArrowUpRight size={18} /></Link>
       </div>
 
       {!loading && (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 animate-fade-in-up-delay-1">
+        <div className="garage-stats">
           {[
             [Bike, 'Vespe salvate', analyses.length],
             [Award, 'Piano attivo', user.plan || 'Free'],
             [TrendingUp, 'Analisi totali', analyses.length],
             [Clock, 'Ultima analisi', lastAnalysis ? new Date(lastAnalysis.created_at).toLocaleDateString('it-IT') : '—'],
           ].map(([Icon, label, value]) => (
-            <div key={label} className="bg-white rounded-xl border border-vespa-cream-dark p-5 transition-all duration-300 hover:shadow-md hover:border-vespa-green/30">
+            <div key={label} className="garage-stat">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-vespa-green/10 flex items-center justify-center">
                   <Icon className="w-5 h-5 text-vespa-green" />
@@ -135,7 +159,7 @@ export default function Dashboard() {
 
         <div className="space-y-6">
           <div className="rounded-[2rem] bg-vespa-black p-6 text-white shadow-xl">
-            <ShoppingBag className="h-7 w-7 text-vespa-gold" />
+            <ShoppingBag className="h-7 w-7 text-vespa-gold-light" />
             <h3 className="mt-4 font-heading text-2xl font-bold">Completa la storia</h3>
             <p className="mt-2 text-sm leading-6 text-vespa-cream/70">Report Pro, matching colore, verifica originalità e supporto vendita: tutto collegato al mezzo giusto.</p>
           </div>
@@ -144,20 +168,21 @@ export default function Dashboard() {
       </div>
 
       {selected && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-vespa-black/60 p-4 backdrop-blur-sm">
-          <div className="mx-auto my-8 max-w-4xl overflow-hidden rounded-[2rem] bg-white shadow-2xl">
+        <dialog ref={dialogRef} aria-labelledby="vehicle-dialog-title" className="vehicle-dialog" onKeyDown={keepDialogFocus} onCancel={(event) => { event.preventDefault(); setSelected(null) }}>
+          <div className="bg-white">
+            <h2 id="vehicle-dialog-title" className="sr-only">Scheda di {selected.display_name || selected.model_name || 'Vespa'}</h2>
             <div className="relative h-64 bg-vespa-cream">
-              <img src={selected.photo_path ? `/${selected.photo_path}` : '/hero-vespa.svg'} alt={selected.display_name} className="h-full w-full object-cover" />
-              <button type="button" onClick={() => setSelected(null)} className="absolute right-4 top-4 rounded-full bg-white/90 p-2 text-vespa-black shadow">
+              {selected.photo_path ? <img src={`/${selected.photo_path}`} alt={selected.display_name || selected.model_name || 'Il tuo mezzo'} className="h-full w-full object-cover" /> : <div className="vehicle-placeholder"><Camera size={32} strokeWidth={1.3} /><span>Aggiungi una fotografia del tuo mezzo</span></div>}
+              <button type="button" aria-label="Chiudi scheda del mezzo" onClick={() => setSelected(null)} className="absolute right-4 top-4 rounded-full bg-white/90 p-2 text-vespa-black shadow">
                 <X className="h-5 w-5" />
               </button>
             </div>
             <div className="grid gap-6 p-6 lg:grid-cols-[1.2fr_0.8fr]">
               <div>
-                <label className="text-xs font-black uppercase tracking-[0.16em] text-vespa-gray">Nome nel garage</label>
+                <label htmlFor="garage-name" className="text-xs font-black uppercase tracking-[0.16em] text-vespa-gray">Nome nel garage</label>
                 <div className="mt-2 flex gap-2">
-                  <input value={nameDraft} onChange={(e) => setNameDraft(e.target.value)} className="flex-1 rounded-2xl border border-vespa-black/10 px-4 py-3 text-sm outline-none focus:border-vespa-green" />
-                  <button type="button" onClick={saveName} disabled={busy} className="rounded-2xl bg-vespa-black px-4 py-3 text-white"><Save className="h-4 w-4" /></button>
+                  <input id="garage-name" value={nameDraft} onChange={(e) => setNameDraft(e.target.value)} className="min-w-0 flex-1 rounded-2xl border border-vespa-black/10 px-4 py-3 text-sm outline-none focus:border-vespa-green" />
+                  <button type="button" aria-label="Salva nome del mezzo" onClick={saveName} disabled={busy} className="rounded-2xl bg-vespa-black px-4 py-3 text-white"><Save className="h-4 w-4" /></button>
                 </div>
 
                 <div className="mt-6 grid grid-cols-2 gap-3 text-sm">
@@ -192,8 +217,8 @@ export default function Dashboard() {
                 </label>
 
                 {selected.analysis_level === 'basic' ? (
-                  <button type="button" onClick={user.plan === 'free' ? buyFullReport : runPro} disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-vespa-gold px-5 py-4 font-black text-vespa-black">
-                    <Sparkles className="h-5 w-5" />
+                  <button type="button" onClick={user.plan === 'free' ? buyFullReport : runPro} disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-vespa-gold-light px-5 py-4 font-black text-vespa-black">
+                    <ScanLine className="h-5 w-5" />
                     {user.plan === 'free' ? 'Sblocca analisi Pro' : 'Approfondisci questo veicolo'}
                   </button>
                 ) : (
@@ -215,7 +240,7 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
-        </div>
+        </dialog>
       )}
     </div>
   )

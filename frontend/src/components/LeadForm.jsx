@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { DollarSign, Loader2, Check, Send } from 'lucide-react'
+import { BadgeEuro, Loader2, Check, Send } from 'lucide-react'
 
 export default function LeadForm({ garage = [], currentVehicle = null }) {
   const { user, api } = useAuth()
@@ -52,7 +52,7 @@ export default function LeadForm({ garage = [], currentVehicle = null }) {
 
   if (success) {
     return (
-      <div className="luxury-card rounded-[2.25rem] p-8 text-center">
+      <div className="lead-panel luxury-card rounded-[2.25rem] p-8 text-center">
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-3xl bg-vespa-green/10">
           <Check className="h-8 w-8 text-vespa-green" />
         </div>
@@ -63,10 +63,10 @@ export default function LeadForm({ garage = [], currentVehicle = null }) {
   }
 
   return (
-    <div className="luxury-card rounded-[2.25rem] p-6 sm:p-8">
+    <div className="lead-panel luxury-card rounded-[2.25rem] p-6 sm:p-8">
       <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-vespa-gold text-vespa-black">
-          <DollarSign className="h-5 w-5" />
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-vespa-green/10 text-vespa-green">
+          <BadgeEuro className="h-5 w-5" />
         </div>
         <div>
           <h3 className="font-heading text-2xl font-bold text-vespa-black">Vendi la tua Vespa</h3>
@@ -77,8 +77,8 @@ export default function LeadForm({ garage = [], currentVehicle = null }) {
       <form onSubmit={handleSubmit} className="mt-6 space-y-4">
         {garage.length > 0 && (
           <div>
-            <label className="mb-2 block text-xs font-black uppercase tracking-[0.16em] text-vespa-gray">Prendi dati dal garage</label>
-            <select
+            <label htmlFor="lead-vehicle" className="mb-2 block text-xs font-black uppercase tracking-[0.16em] text-vespa-gray">Prendi dati dal garage</label>
+            <select id="lead-vehicle"
               value={selectedId}
               onChange={(e) => setSelectedId(e.target.value)}
               className="w-full rounded-2xl border border-vespa-black/10 bg-white/80 px-4 py-3.5 text-sm outline-none transition-all focus:border-vespa-green focus:ring-4 focus:ring-vespa-green/10"
@@ -100,9 +100,9 @@ export default function LeadForm({ garage = [], currentVehicle = null }) {
 
         {!user && (
           <div>
-            <label className="mb-2 block text-xs font-black uppercase tracking-[0.16em] text-vespa-gray">La tua email</label>
+            <label htmlFor="lead-email" className="mb-2 block text-xs font-black uppercase tracking-[0.16em] text-vespa-gray">La tua email</label>
             <input
-              type="email"
+              id="lead-email" autoComplete="email" type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="tua@email.it"
@@ -112,8 +112,8 @@ export default function LeadForm({ garage = [], currentVehicle = null }) {
           </div>
         )}
         <div>
-          <label className="mb-2 block text-xs font-black uppercase tracking-[0.16em] text-vespa-gray">Descrivi la vendita</label>
-          <textarea
+          <label htmlFor="lead-description" className="mb-2 block text-xs font-black uppercase tracking-[0.16em] text-vespa-gray">Descrivi la vendita</label>
+          <textarea id="lead-description"
             value={descrizione}
             onChange={(e) => setDescrizione(e.target.value)}
             rows={4}

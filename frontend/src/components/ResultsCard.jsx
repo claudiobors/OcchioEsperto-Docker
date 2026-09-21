@@ -1,9 +1,9 @@
-import { CheckCircle, AlertTriangle, XCircle, Gauge, Brain, ClipboardCheck } from 'lucide-react'
+import { CheckCircle, AlertTriangle, XCircle, Gauge, ClipboardCheck, ArrowUpRight } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const badges = {
   free: { label: 'Base', class: 'bg-vespa-black text-white' },
-  premium: { label: 'Premium', class: 'bg-vespa-gold text-vespa-black' },
+  premium: { label: 'Premium', class: 'bg-vespa-gold-light text-vespa-black' },
 }
 
 export default function ResultsCard({ result, plan = 'free' }) {
@@ -40,11 +40,11 @@ export default function ResultsCard({ result, plan = 'free' }) {
   }
 
   return (
-    <div className="animate-scale-in overflow-hidden rounded-[2.25rem] bg-white shadow-[0_30px_90px_rgba(9,13,18,0.14)] ring-1 ring-vespa-black/10">
+    <div className="result-sheet">
       <div className="dark-panel p-7">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-black uppercase tracking-[0.22em] text-vespa-gold-light">Risultato</p>
+
             <h3 className="mt-2 font-heading text-3xl font-bold leading-tight text-white">
               {modelName || 'Nessuna corrispondenza certa'}
             </h3>
@@ -92,16 +92,8 @@ export default function ResultsCard({ result, plan = 'free' }) {
         )}
 
         {expert && (
-          <div className="rounded-3xl border border-vespa-green/15 bg-vespa-green/5 p-5">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-vespa-green text-white">
-                <Brain className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-vespa-gray">Occhio dell’esperto</p>
-                <p className="font-bold text-vespa-black">Analisi ragionata</p>
-              </div>
-            </div>
+          <section className="report-section">
+            <h4>Analisi ragionata</h4>
             {expert.expert_summary && <p className="mt-4 text-sm leading-7 text-vespa-gray">{expert.expert_summary}</p>}
             {expert.evidence?.length > 0 && (
               <ul className="mt-4 space-y-2 text-sm text-vespa-gray">
@@ -114,20 +106,20 @@ export default function ResultsCard({ result, plan = 'free' }) {
               </ul>
             )}
             {expert.recommended_checks?.length > 0 && (
-              <div className="mt-4 rounded-2xl bg-white/70 p-4">
-                <p className="text-xs font-black uppercase tracking-[0.16em] text-vespa-gray">Controlli consigliati</p>
+              <section className="report-section">
+                <h4>Controlli consigliati</h4>
                 <ul className="mt-2 list-disc space-y-1 pl-5 text-xs leading-5 text-vespa-gray">
                   {expert.recommended_checks.slice(0, 3).map((item) => <li key={item}>{item}</li>)}
                 </ul>
-              </div>
+              </section>
             )}
-          </div>
+          </section>
         )}
 
         {plan === 'free' && (
           <div className="rounded-3xl bg-vespa-black p-5 text-white">
             <div className="flex items-center gap-3">
-              <Gauge className="h-5 w-5 text-vespa-gold" />
+              <Gauge className="h-5 w-5 text-vespa-gold-light" />
               <p className="font-bold">Vuoi la scheda completa?</p>
             </div>
             <p className="mt-2 text-sm leading-6 text-vespa-cream/70">
@@ -135,11 +127,13 @@ export default function ResultsCard({ result, plan = 'free' }) {
               i range dei numeri telaio e motore, i dettagli storici e altri dati utili per capire meglio la tua Vespa.
             </p>
             <button type="button" onClick={buyFullReport} className="mt-4 inline-flex rounded-full bg-white px-4 py-2 text-sm font-black text-vespa-black transition-transform hover:-translate-y-0.5">
-              Scopri la scheda completa →
+              Scopri la scheda completa <ArrowUpRight className="ml-2 h-4 w-4" />
             </button>
           </div>
         )}
       </div>
+
+      <p className="result-disclaimer">Analisi indicativa basata sui dati disponibili. Non è una perizia né un certificato ufficiale di origine o autenticità.</p>
 
       {result.id && (
         <div className="border-t border-vespa-black/10 bg-vespa-cream/60 px-7 py-4">
