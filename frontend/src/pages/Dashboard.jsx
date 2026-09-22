@@ -1,13 +1,15 @@
 import { useCallback, useState, useEffect, useRef } from 'react'
 import { useAuth } from '../context/AuthContext'
+import { useToast } from '../context/ToastContext'
 import { Link } from 'react-router-dom'
 import GarageGrid from '../components/GarageGrid'
 import LeadForm from '../components/LeadForm'
 import { StatsCardSkeleton, GarageGridSkeleton } from '../components/Skeletons'
-import { Bike, Clock, Award, TrendingUp, X, FileText, ScanLine, Upload, Save, ShoppingBag, ArrowUpRight, Camera } from 'lucide-react'
+import { Bike, Clock, Award, TrendingUp, X, FileText, ScanLine, Upload, Save, ShoppingBag, ArrowUpRight, Camera, Trash2 } from 'lucide-react'
 
 export default function Dashboard() {
   const { user, api } = useAuth()
+  const { addToast } = useToast()
   const [analyses, setAnalyses] = useState([])
   const [selected, setSelected] = useState(null)
   const [nameDraft, setNameDraft] = useState('')
@@ -45,8 +47,8 @@ export default function Dashboard() {
   const refreshGarage = useCallback(() => api.get('/vespa/garage').then((res) => {
     const items = res.data.vespe || []
     setAnalyses(items)
-    if (selected) setSelected(items.find((item) => item.id === selected.id) || null)
-  }), [api, selected])
+    setSelected((prev) => (prev ? items.find((item) => item.id === prev.id) || null : prev))
+  }), [api])
 
   useEffect(() => {
     if (user) {
@@ -81,6 +83,22 @@ export default function Dashboard() {
       const res = await api.post(`/vespa/garage/${selected.id}/photo`, payload, { headers: { 'Content-Type': 'multipart/form-data' } })
       setSelected(res.data)
       await refreshGarage()
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const deleteVehicle = async () => {
+    if (!selected) return
+    if (!window.confirm(`Eliminare "${selected.display_name || selected.model_name}" dal garage? L'operazione non è reversibile.`)) return
+    setBusy(true)
+    try {
+      await api.delete(`/vespa/garage/${selected.id}`)
+      setSelected(null)
+      await refreshGarage()
+      addToast('Vespa rimossa dal garage.', 'success')
+    } catch {
+      addToast('Impossibile eliminare la Vespa. Riprova.', 'error')
     } finally {
       setBusy(false)
     }
@@ -237,6 +255,11 @@ export default function Dashboard() {
                     <li>Check originalità e dettagli storici</li>
                   </ul>
                 </div>
+
+                <button type="button" onClick={deleteVehicle} disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-2xl border border-vespa-red/30 bg-vespa-red/5 px-5 py-4 font-black text-vespa-red transition-colors hover:bg-vespa-red/10">
+                  <Trash2 className="h-4 w-4" />
+                  Elimina dal garage
+                </button>
               </div>
             </div>
           </div>

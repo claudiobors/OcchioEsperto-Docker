@@ -350,7 +350,14 @@ class KnowledgeBase:
                 if family_candidates:
                     candidates = family_candidates
 
-        candidates.sort(key=lambda r: (-r["match_score"], -int(r["exact_prefix_match"]), -int(r["family_prefix_match"]), r["production_start"], r["model_name"]))
+        def _range_width(row: Dict[str, Any]) -> int:
+            start_num = self._extract_numeric(self._normalize_number(row.get("number_start") or ""))
+            end_num = self._extract_numeric(self._normalize_number(row.get("number_end") or ""))
+            if start_num is None or end_num is None or end_num < start_num:
+                return 10**12
+            return end_num - start_num
+
+        candidates.sort(key=lambda r: (-r["match_score"], -int(r["exact_prefix_match"]), -int(r["family_prefix_match"]), _range_width(r), r["production_start"], r["model_name"]))
         return candidates[0]
 
     def _score_number_row(

@@ -356,6 +356,495 @@ def seed_data(conn):
     conn.commit()
 
     # =========================================================
+    # REAL VERIFIED CHASSIS NUMBER RANGES
+    # Fonte: registro storico fornito dall'utente (dati "certi"), con
+    # nomenclatura dei modelli incrociata su scooterhelp.com/serial/.
+    # A differenza delle stime sopra, questi sono range documentati
+    # anno per anno. Aggiunti come modelli distinti per non alterare
+    # il comportamento di matching esistente.
+    # =========================================================
+    real_models = [
+        # (name, slug, start, end, displacement, description)
+        ("Vespa 50 N", "vespa-50-n", 1963, 1971, "50 cc",
+         "Prima Vespa 50cc, telaio V5A1T. Numeri di telaio documentati anno per anno."),
+        ("Vespa 50 R", "vespa-50-r", 1969, 1983, "50 cc",
+         "Variante 'R' della Vespa 50, telaio V5A1T con numerazione dedicata (700001+), distinta dalla 50 N."),
+        ("Vespa 50 Special", "vespa-50-special-verificata", 1969, 1983, "50 cc",
+         "Vespa 50 Special, telai V5A2T/V5B1T/V5B3T secondo l'anno."),
+        ("Vespa 50 Elestart", "vespa-50-elestart", 1969, 1977, "50 cc",
+         "Versione con avviamento elettrico della Vespa 50, telai V5A3T/V5B2T/V5B4T secondo l'anno."),
+        ("Vespa 50 S", "vespa-50-s", 1963, 1972, "50 cc",
+         "Vespa 50 S, telaio V5SA1T."),
+        ("Vespa 50 SS", "vespa-50-ss", 1965, 1972, "50 cc",
+         "Vespa 50 SS sportiva, telaio V5SS1T."),
+        ("Vespa 50 Sprinter (50SR)", "vespa-50-sprinter", 1971, 1979, "50 cc",
+         "Vespa 50 Sprinter / 50SR, telaio V5SS2T."),
+        ("Vespa PX 80 Arcobaleno Elestart", "vespa-px-80-arcobaleno", 1984, 1984, "80 cc",
+         "Serie Arcobaleno PX80 Elestart, telaio V8X1T. Solo numero di partenza documentato."),
+        ("Vespa 90 SS", "vespa-90-ss", 1965, 1971, "90 cc",
+         "Vespa 90 SS, telaio V9SS1T."),
+        ("Vespa 90 Racer", "vespa-90-racer", 1971, 1974, "90 cc",
+         "Vespa 90 Racer, telaio V9SS2T."),
+        ("Vespa 100", "vespa-100-verificata", 1978, 1983, "100 cc",
+         "Vespa 100, telaio V9B1T."),
+        ("Vespa PX 100 E", "vespa-px-100-e", 1983, 1984, "100 cc",
+         "Vespa PX100E, telaio VIX1T."),
+
+        # --- Vespa 125, serie storiche 1948-1969 (una per ciascuna evoluzione di telaio) ---
+        ("Vespa 125 (V1T-V15T)", "vespa-125-v1t-v15t", 1948, 1950, "125 cc",
+         "Prima serie Vespa 125, telai V1T-V15T."),
+        ("Vespa 125 (V30T-V33T)", "vespa-125-v30t-v33t", 1950, 1952, "125 cc",
+         "Evoluzione della prima serie 125, telai V30T-V33T."),
+        ("Vespa 125 (VM1T)", "vespa-125-vm1t", 1952, 1953, "125 cc",
+         "Vespa 125, telaio VM1T."),
+        ("Vespa 125 U (VU1T)", "vespa-125-u-vu1t", 1953, 1953, "125 cc",
+         "Vespa 125 U (economica), telaio VU1T."),
+        ("Vespa 125 (VM2T)", "vespa-125-vm2t", 1953, 1954, "125 cc",
+         "Vespa 125, telaio VM2T."),
+        ("Vespa 125 (VN1T)", "vespa-125-vn1t", 1954, 1955, "125 cc",
+         "Vespa 125, telaio VN1T."),
+        ("Vespa 125 (VN2T)", "vespa-125-vn2t", 1956, 1957, "125 cc",
+         "Vespa 125, telaio VN2T."),
+        ("Vespa 125 (VNA1T)", "vespa-125-vna1t", 1957, 1958, "125 cc",
+         "Vespa 125, telaio VNA1T."),
+        ("Vespa 125 (VNA2T)", "vespa-125-vna2t", 1958, 1959, "125 cc",
+         "Vespa 125, telaio VNA2T."),
+        ("Vespa 125 (VNB1T)", "vespa-125-vnb1t", 1959, 1961, "125 cc",
+         "Vespa 125, telaio VNB1T."),
+        ("Vespa 125 (VNB2T)", "vespa-125-vnb2t", 1961, 1961, "125 cc",
+         "Vespa 125, telaio VNB2T."),
+        ("Vespa 125 (VNB3T)", "vespa-125-vnb3t", 1961, 1962, "125 cc",
+         "Vespa 125, telaio VNB3T."),
+        ("Vespa 125 (VNB4T)", "vespa-125-vnb4t", 1962, 1963, "125 cc",
+         "Vespa 125, telaio VNB4T."),
+        ("Vespa 125 (VNB5T)", "vespa-125-vnb5t", 1963, 1964, "125 cc",
+         "Vespa 125, telaio VNB5T."),
+        ("Vespa 125 (VNB6T)", "vespa-125-vnb6t", 1964, 1966, "125 cc",
+         "Vespa 125, telaio VNB6T."),
+        ("Vespa 125 Super (VNC1T)", "vespa-125-super-vnc1t", 1965, 1969, "125 cc",
+         "Vespa 125 Super, telaio VNC1T (non va confusa con la successiva 'Vespa 125 Super VMA/VMB')."),
+
+        ("Vespa 125 GT / Sprint (VNL2T)", "vespa-125-gt-sprint", 1966, 1973, "125 cc",
+         "Vespa 125 GT e Sprint, telaio VNL2T (numerazione dedicata, distinta dalla GTR)."),
+        ("Vespa 125 GTR (VNL2T)", "vespa-125-gtr", 1968, 1982, "125 cc",
+         "Vespa 125 GTR, telaio VNL2T con numerazione dedicata (100001+), distinta da GT/Sprint."),
+        ("Vespa 125 TS", "vespa-125-ts-verificata", 1975, 1978, "125 cc",
+         "Vespa 125 TS, telaio VNL3T."),
+        ("Vespa P125X (VNX1T)", "vespa-p125x", 1977, 1982, "125 cc",
+         "Vespa P125X, telaio VNX1T, predecessore della PX125E."),
+        ("Vespa PX 125 E / EFL (VNX2T)", "vespa-px125e", 1981, 1987, "125 cc",
+         "Vespa PX125E e versione Arcobaleno, telaio VNX2T."),
+        ("Vespa PX 125 E Arcobaleno Elestart", "vespa-px125e-arcobaleno-elestart", 1984, 1984, "125 cc",
+         "Vespa PX125E Arcobaleno con avviamento elettrico, telaio VNX2T. Solo numero di partenza documentato."),
+        ("Vespa PX 125 T5 (VNX5T)", "vespa-px125-t5-verificata", 1985, 1986, "125 cc",
+         "Vespa PX125 T5, telaio VNX5T. Solo numeri di partenza documentati."),
+
+        ("Vespa Allstate (USA, Sears)", "vespa-allstate-usa", 1951, 1965, "125-150 cc",
+         "Vespa venduta negli USA con marchio Sears Allstate. Corrispondenza anno/telaio/numero di catalogo Sears "
+         "nota (VA1T 1951 - VA14T 1965), ma senza range seriali numerici documentati."),
+        ("Vespa S (VNS1T-VNS6T)", "vespa-s-vns", 1959, 1965, "125-150 cc",
+         "Serie poco documentata; nota la corrispondenza anno/telaio (VNS1T 1959 - VNS6T 1965) ma senza range "
+         "seriali numerici documentati."),
+
+        ("Vespa 150 (VL/VB/VBA/VBB)", "vespa-150-classic-verificata", 1954, 1965, "150 cc",
+         "Evoluzione della Vespa 150 attraverso i telai VL1T, VL2T, VL3T, VB1T, VBA1T, VBB1T, VBB2T."),
+        ("Vespa 150 Super (VBC1T)", "vespa-150-super-vbc1t", 1965, 1979, "150 cc",
+         "Vespa 150 Super, telaio VBC1T, prodotta per 15 anni con numerazione continua."),
+        ("Vespa 150 GL / Sprint (VGL-VLB1T)", "vespa-150-gl-sprint-verificata", 1957, 1974, "150 cc",
+         "Evoluzione dalla GL alla Sprint: telai VGL1T, VGLA1T, VGLB1T, VLA1T, VLB1T (dal 050001 al 051523 il "
+         "prefisso è eccezionalmente VLB2T)."),
+        ("Vespa 150 Sprint Veloce (VLB1T)", "vespa-150-sprint-veloce-verificata", 1969, 1979, "150 cc",
+         "Vespa 150 Sprint Veloce, telaio VLB1T con numerazione dedicata (0150001+), distinta dalla Sprint standard."),
+        ("Vespa P150S (VBX1T)", "vespa-p150s", 1978, 1984, "150 cc",
+         "Vespa P150S, telaio VBX1T."),
+        ("Vespa P150X, gamma completa (VBX1T)", "vespa-p150x-full", 1978, 1990, "150 cc",
+         "Vespa P150X, telaio VBX1T, numerazione complessiva 1978-1990."),
+        ("Vespa P150X / PX150E / Arcobaleno EFL (VLX1T)", "vespa-p150x-px150e", 1978, 1984, "150 cc",
+         "Vespa P150X, PX150E e versione Arcobaleno EFL, telaio VLX1T."),
+        ("Vespa PX 150 Arcobaleno Elestart (VLX1T)", "vespa-px150-arcobaleno-elestart", 1984, 1984, "150 cc",
+         "Vespa PX150 Arcobaleno con avviamento elettrico, telaio VLX1T. Solo numero di partenza documentato."),
+
+        ("Vespa 150 GS - 160 GS (VS1T-VS5T, VSB1T)", "vespa-150gs-160gs-verificata", 1955, 1964, "150-160 cc",
+         "Evoluzione della GS 150 (VS1T-VS5T) e successiva GS 160 (VSB1T)."),
+        ("Vespa 180 SS (VSC1T)", "vespa-180-ss-vsc1t", 1964, 1968, "180 cc",
+         "Vespa 180 Super Sport, telaio VSC1T."),
+        ("Vespa 180 Rally (VSD1T)", "vespa-180-rally-verificata", 1968, 1973, "180 cc",
+         "Vespa 180 Rally, telaio VSD1T."),
+        ("Vespa 200 Rally (VSE1T)", "vespa-200-rally-verificata", 1972, 1979, "200 cc",
+         "Vespa 200 Rally, telaio VSE1T."),
+        ("Vespa P200X / PX200E / Arcobaleno EFL (VSX1T)", "vespa-p200x-px200e", 1977, 1986, "200 cc",
+         "Vespa P200X, PX200E e versione Arcobaleno EFL, telaio VSX1T. Dal 1984 al 1986 numerazione 184911-195545 "
+         "più una seconda serie aperta da 312000 in poi."),
+        ("Vespa PX 200 E Arcobaleno Elestart (VSX1T)", "vespa-px200e-arcobaleno-elestart", 1981, 1990, "200 cc",
+         "Vespa PX200E Arcobaleno con avviamento elettrico, telaio VSX1T."),
+    ]
+
+    cursor.executemany(
+        "INSERT OR IGNORE INTO vespa_models (name, slug, production_start, production_end, displacement_cc, description) VALUES (?, ?, ?, ?, ?, ?)",
+        real_models
+    )
+    conn.commit()
+    cursor.execute("SELECT id, slug FROM vespa_models")
+    model_ids.update({row[1]: row[0] for row in cursor.fetchall()})
+
+    real_chassis_data = [
+        # (slug, start, end, year_start, year_end, notes)
+
+        # Vespa 50 N (V5A1T)
+        ("vespa-50-n", "1001", "6960", 1963, 1963, "Telaio V5A1T"),
+        ("vespa-50-n", "6961", "61346", 1964, 1964, "Telaio V5A1T"),
+        ("vespa-50-n", "61347", "92876", 1965, 1965, "Telaio V5A1T"),
+        ("vespa-50-n", "92877", "101576", 1965, 1965, "Telaio V5A1T"),
+        ("vespa-50-n", "101577", "155460", 1966, 1966, "Telaio V5A1T"),
+        ("vespa-50-n", "155461", "190977", 1967, 1967, "Telaio V5A1T"),
+        ("vespa-50-n", "200001", "213546", 1967, 1967, "Telaio V5A1T"),
+        ("vespa-50-n", "213547", "248333", 1968, 1968, "Telaio V5A1T"),
+        ("vespa-50-n", "248334", "275620", 1969, 1969, "Telaio V5A1T"),
+        ("vespa-50-n", "275621", "280997", 1970, 1970, "Telaio V5A1T"),
+        ("vespa-50-n", "280998", "283299", 1971, 1971, "Telaio V5A1T"),
+
+        # Vespa 50 R (V5A1T, numerazione dedicata)
+        ("vespa-50-r", "700001", "702503", 1969, 1969, "Telaio V5A1T (serie 50/R)"),
+        ("vespa-50-r", "702504", "735716", 1970, 1970, "Telaio V5A1T (serie 50/R)"),
+        ("vespa-50-r", "735717", "769612", 1971, 1971, "Telaio V5A1T (serie 50/R)"),
+        ("vespa-50-r", "769613", "938761", 1972, 1983, "Telaio V5A1T (serie 50/R)"),
+
+        # Vespa 50 Special (V5A2T / V5B1T / V5B3T)
+        ("vespa-50-special-verificata", "1001", "2015", 1969, 1969, "Telaio V5A2T"),
+        ("vespa-50-special-verificata", "2016", "34257", 1970, 1970, "Telaio V5A2T"),
+        ("vespa-50-special-verificata", "34258", "96013", 1971, 1971, "Telaio V5A2T"),
+        ("vespa-50-special-verificata", "1001", "95671", 1972, 1975, "Telaio V5B1T"),
+        ("vespa-50-special-verificata", "1001", "565056", 1975, 1983, "Telaio V5B3T"),
+
+        # Vespa 50 Elestart (V5A3T / V5B2T / V5B4T)
+        ("vespa-50-elestart", "1001", "1020", 1969, 1969, "Telaio V5A3T"),
+        ("vespa-50-elestart", "1021", "3696", 1970, 1970, "Telaio V5A3T"),
+        ("vespa-50-elestart", "3697", "4833", 1971, 1971, "Telaio V5A3T"),
+        ("vespa-50-elestart", "4834", "5708", 1972, 1972, "Telaio V5B2T"),
+        ("vespa-50-elestart", "1001", "3667", 1972, 1977, "Telaio V5B4T"),
+
+        # Vespa 50 S (V5SA1T)
+        ("vespa-50-s", "1101", "2104", 1963, 1963, "Telaio V5SA1T"),
+        ("vespa-50-s", "2105", "10479", 1964, 1964, "Telaio V5SA1T"),
+        ("vespa-50-s", "10480", "15001", 1965, 1965, "Telaio V5SA1T"),
+        ("vespa-50-s", "15002", "15324", 1966, 1966, "Telaio V5SA1T"),
+        ("vespa-50-s", "15325", "20424", 1966, 1966, "Telaio V5SA1T"),
+        ("vespa-50-s", "20425", "30964", 1967, 1967, "Telaio V5SA1T"),
+        ("vespa-50-s", "30965", "31000", 1968, 1968, "Telaio V5SA1T"),
+        ("vespa-50-s", "31001", "35604", 1968, 1968, "Telaio V5SA1T"),
+        ("vespa-50-s", "35605", "40250", 1969, 1969, "Telaio V5SA1T"),
+        ("vespa-50-s", "40251", "45599", 1970, 1970, "Telaio V5SA1T"),
+        ("vespa-50-s", "45600", "48980", 1971, 1971, "Telaio V5SA1T"),
+        ("vespa-50-s", "48981", "148270", 1972, 1972, "Telaio V5SA1T"),
+
+        # Vespa 50 SS (V5SS1T)
+        ("vespa-50-ss", "1001", "1192", 1965, 1965, "Telaio V5SS1T"),
+        ("vespa-50-ss", "1193", "2207", 1966, 1966, "Telaio V5SS1T"),
+        ("vespa-50-ss", "2208", "2397", 1967, 1967, "Telaio V5SS1T"),
+        ("vespa-50-ss", "2398", "2793", 1968, 1968, "Telaio V5SS1T"),
+        ("vespa-50-ss", "2794", "3089", 1969, 1969, "Telaio V5SS1T"),
+        ("vespa-50-ss", "3090", "3422", 1970, 1970, "Telaio V5SS1T"),
+        ("vespa-50-ss", "3423", "3525", 1971, 1971, "Telaio V5SS1T"),
+        ("vespa-50-ss", "3526", "4525", 1972, 1972, "Telaio V5SS1T"),
+
+        # Vespa 50 Sprinter / 50SR (V5SS2T)
+        ("vespa-50-sprinter", "4001", "4160", 1971, 1971, "Telaio V5SS2T"),
+        ("vespa-50-sprinter", "4161", "4515", 1972, 1972, "Telaio V5SS2T"),
+        ("vespa-50-sprinter", "4516", "10579", 1973, 1979, "Telaio V5SS2T"),
+
+        # Vespa PX 80 Arcobaleno Elestart (V8X1T) - solo inizio noto
+        ("vespa-px-80-arcobaleno", "3000001", None, 1984, 1984, "Telaio V8X1T, fine range non documentata"),
+
+        # Vespa 90 (V9A1T)
+        ("vespa-90", "1001", "2984", 1963, 1963, "Telaio V9A1T"),
+        ("vespa-90", "2985", "17549", 1964, 1964, "Telaio V9A1T"),
+        ("vespa-90", "17550", "21544", 1965, 1965, "Telaio V9A1T"),
+        ("vespa-90", "21545", "24130", 1966, 1966, "Telaio V9A1T"),
+        ("vespa-90", "24131", "25000", 1967, 1967, "Telaio V9A1T"),
+        ("vespa-90", "25001", "28000", 1967, 1967, "Telaio V9A1T"),
+        ("vespa-90", "28001", "28382", 1967, 1967, "Telaio V9A1T"),
+        ("vespa-90", "28383", "32255", 1968, 1968, "Telaio V9A1T"),
+        ("vespa-90", "32256", "36966", 1969, 1969, "Telaio V9A1T"),
+        ("vespa-90", "36967", "44721", 1970, 1970, "Telaio V9A1T"),
+        ("vespa-90", "44722", "52905", 1971, 1971, "Telaio V9A1T"),
+        ("vespa-90", "52906", "300026", 1972, 1978, "Telaio V9A1T"),
+
+        # Vespa 90 SS (V9SS1T)
+        ("vespa-90-ss", "1001", "2262", 1965, 1965, "Telaio V9SS1T"),
+        ("vespa-90-ss", "2263", "4876", 1966, 1966, "Telaio V9SS1T"),
+        ("vespa-90-ss", "4877", "5026", 1967, 1967, "Telaio V9SS1T"),
+        ("vespa-90-ss", "5027", "5401", 1968, 1968, "Telaio V9SS1T"),
+        ("vespa-90-ss", "5402", "5678", 1969, 1969, "Telaio V9SS1T"),
+        ("vespa-90-ss", "5679", "6138", 1970, 1970, "Telaio V9SS1T"),
+        ("vespa-90-ss", "6139", "6309", 1971, 1971, "Telaio V9SS1T"),
+
+        # Vespa 90 Racer (V9SS2T)
+        ("vespa-90-racer", "7001", "7360", 1971, 1971, "Telaio V9SS2T"),
+        ("vespa-90-racer", "7361", "10516", 1972, 1974, "Telaio V9SS2T"),
+
+        # Vespa 98 (V98) - integra il modello esistente con il range reale documentato
+        ("vespa-98", "01", "18079", 1946, 1947, "Telaio V98 (range reale documentato)"),
+
+        # Vespa 100 (V9B1T)
+        ("vespa-100-verificata", "1101", "28904", 1978, 1983, "Telaio V9B1T"),
+
+        # Vespa PX 100 E (VIX1T)
+        ("vespa-px-100-e", "1101", "11104", 1983, 1983, "Telaio VIX1T"),
+        ("vespa-px-100-e", "11105", None, 1984, 1984, "Telaio VIX1T, fine range non documentata"),
+
+        # Vespa 125 Nuova (VMA1T) - integra il modello esistente
+        ("vespa-nuova-125", "01001", "08392", 1965, 1965, "Telaio VMA1T (range reale documentato)"),
+        ("vespa-nuova-125", "08393", "014781", 1966, 1966, "Telaio VMA1T (range reale documentato)"),
+        ("vespa-nuova-125", "014782", "018100", 1967, 1967, "Telaio VMA1T (range reale documentato)"),
+
+        # Vespa 125 Primavera (VMA2T) - integra il modello esistente
+        ("vespa-primavera-125", "020001", "022874", 1967, 1967, "Telaio VMA2T (range reale documentato)"),
+        ("vespa-primavera-125", "022875", "031548", 1968, 1968, "Telaio VMA2T (range reale documentato)"),
+        ("vespa-primavera-125", "031549", "036266", 1969, 1969, "Telaio VMA2T (range reale documentato)"),
+        ("vespa-primavera-125", "036267", "042299", 1970, 1970, "Telaio VMA2T (range reale documentato)"),
+        ("vespa-primavera-125", "042300", "049703", 1971, 1971, "Telaio VMA2T (range reale documentato)"),
+        ("vespa-primavera-125", "049704", "0240329", 1972, 1983, "Telaio VMA2T (range reale documentato)"),
+
+        # Vespa 125 Primavera ET3 (VMB1T) - integra il modello esistente
+        ("vespa-primavera-et3", "1101", "150143", 1976, 1983, "Telaio VMB1T (range reale documentato)"),
+
+        # Vespa 125, serie storiche 1948-1969
+        ("vespa-125-v1t-v15t", "01", "104096", 1948, 1950, "Telaio V1T-V15T"),
+        ("vespa-125-v30t-v33t", "104097", "251820", 1950, 1952, "Telaio V30T-V33T"),
+        ("vespa-125-vm1t", "01001", "08830", 1952, 1952, "Telaio VM1T"),
+        ("vespa-125-vm1t", "08831", "085870", 1953, 1953, "Telaio VM1T"),
+        ("vespa-125-u-vu1t", "1001", "7001", 1953, 1953, "Telaio VU1T (Vespa U)"),
+        ("vespa-125-vm2t", "085871", "0100619", 1953, 1953, "Telaio VM2T"),
+        ("vespa-125-vm2t", "0100620", "0176014", 1954, 1954, "Telaio VM2T"),
+        ("vespa-125-vn1t", "01001", "023000", 1954, 1954, "Telaio VN1T"),
+        ("vespa-125-vn1t", "023001", "050100", 1955, 1955, "Telaio VN1T"),
+        ("vespa-125-vn2t", "050101", "096569", 1956, 1956, "Telaio VN2T"),
+        ("vespa-125-vn2t", "096570", "0125600", 1957, 1957, "Telaio VN2T"),
+        ("vespa-125-vna1t", "01001", "010300", 1957, 1957, "Telaio VNA1T"),
+        ("vespa-125-vna1t", "010301", "068031", 1958, 1958, "Telaio VNA1T"),
+        ("vespa-125-vna2t", "068032", "0107007", 1958, 1958, "Telaio VNA2T"),
+        ("vespa-125-vna2t", "0107008", "0116431", 1959, 1959, "Telaio VNA2T"),
+        ("vespa-125-vnb1t", "01001", "016275", 1959, 1959, "Telaio VNB1T"),
+        ("vespa-125-vnb1t", "016276", "080686", 1960, 1960, "Telaio VNB1T"),
+        ("vespa-125-vnb1t", "080687", "089850", 1961, 1961, "Telaio VNB1T"),
+        ("vespa-125-vnb2t", "01001", "038699", 1961, 1961, "Telaio VNB2T"),
+        ("vespa-125-vnb3t", "034700", "054414", 1961, 1961, "Telaio VNB3T"),
+        ("vespa-125-vnb3t", "054415", "090395", 1962, 1962, "Telaio VNB3T"),
+        ("vespa-125-vnb4t", "090396", "099700", 1962, 1962, "Telaio VNB4T"),
+        ("vespa-125-vnb4t", "099701", "0136485", 1963, 1963, "Telaio VNB4T"),
+        ("vespa-125-vnb5t", "01001", "07070", 1963, 1963, "Telaio VNB5T"),
+        ("vespa-125-vnb5t", "07071", "043240", 1964, 1964, "Telaio VNB5T"),
+        ("vespa-125-vnb6t", "01001", "07455", 1964, 1964, "Telaio VNB6T"),
+        ("vespa-125-vnb6t", "07456", "035439", 1965, 1965, "Telaio VNB6T"),
+        ("vespa-125-vnb6t", "035440", "037028", 1966, 1966, "Telaio VNB6T (trascrizione originale ambigua: 'VNB67')"),
+        ("vespa-125-super-vnc1t", "01001", "04420", 1965, 1965, "Telaio VNC1T (Super)"),
+        ("vespa-125-super-vnc1t", "04421", "019044", 1966, 1966, "Telaio VNC1T (Super)"),
+        ("vespa-125-super-vnc1t", "019045", "023745", 1967, 1967, "Telaio VNC1T (Super)"),
+        ("vespa-125-super-vnc1t", "023746", "025076", 1968, 1968, "Telaio VNC1T (Super)"),
+        ("vespa-125-super-vnc1t", "025077", "025146", 1969, 1969, "Telaio VNC1T (Super)"),
+
+        # Vespa 125 GT / Sprint (VNL2T)
+        ("vespa-125-gt-sprint", "30001", "35763", 1966, 1966, "Telaio VNL2T (GT/Sprint)"),
+        ("vespa-125-gt-sprint", "35764", "54602", 1967, 1967, "Telaio VNL2T (GT/Sprint)"),
+        ("vespa-125-gt-sprint", "54603", "65401", 1968, 1968, "Telaio VNL2T (GT/Sprint)"),
+        ("vespa-125-gt-sprint", "65402", "69847", 1969, 1969, "Telaio VNL2T (GT/Sprint)"),
+        ("vespa-125-gt-sprint", "69848", "73613", 1970, 1970, "Telaio VNL2T (GT/Sprint)"),
+        ("vespa-125-gt-sprint", "73614", "75821", 1971, 1971, "Telaio VNL2T (GT/Sprint)"),
+        ("vespa-125-gt-sprint", "75822", "81582", 1972, 1973, "Telaio VNL2T (GT/Sprint)"),
+
+        # Vespa 125 GTR (VNL2T, numerazione dedicata 100001+)
+        ("vespa-125-gtr", "100001", "100751", 1968, 1968, "Telaio VNL2T (GTR)"),
+        ("vespa-125-gtr", "100752", "107340", 1969, 1969, "Telaio VNL2T (GTR)"),
+        ("vespa-125-gtr", "107341", "112897", 1970, 1970, "Telaio VNL2T (GTR)"),
+        ("vespa-125-gtr", "112898", "117898", 1971, 1971, "Telaio VNL2T (GTR)"),
+        ("vespa-125-gtr", "117899", "151788", 1972, 1982, "Telaio VNL2T (GTR)"),
+
+        # Vespa 125 TS (VNL3T)
+        ("vespa-125-ts-verificata", "1101", "29804", 1975, 1978, "Telaio VNL3T"),
+
+        # Vespa P125X (VNX1T)
+        ("vespa-p125x", "1101", "5004", 1977, 1977, "Telaio VNX1T"),
+        ("vespa-p125x", "5005", "32785", 1978, 1978, "Telaio VNX1T"),
+        ("vespa-p125x", "32786", "74935", 1979, 1979, "Telaio VNX1T"),
+        ("vespa-p125x", "74936", "130379", 1980, 1980, "Telaio VNX1T"),
+        ("vespa-p125x", "130380", "195563", 1981, 1981, "Telaio VNX1T"),
+        ("vespa-p125x", "195564", "198248", 1982, 1982, "Telaio VNX1T"),
+
+        # Vespa PX 125 E / EFL (VNX2T)
+        ("vespa-px125e", "1101", "11295", 1981, 1981, "Telaio VNX2T"),
+        ("vespa-px125e", "11296", "87953", 1982, 1982, "Telaio VNX2T"),
+        ("vespa-px125e", "87954", "135401", 1983, 1983, "Telaio VNX2T"),
+        ("vespa-px125e", "200001", "214890", 1983, 1983, "Telaio VNX2T (serie Arcobaleno)"),
+        ("vespa-px125e", "214891", "243846", 1984, 1984, "Telaio VNX2T (serie Arcobaleno)"),
+        ("vespa-px125e", "243847", "264193", 1985, 1985, "Telaio VNX2T (serie Arcobaleno)"),
+        ("vespa-px125e", "264194", "278043", 1986, 1986, "Telaio VNX2T (serie Arcobaleno)"),
+        ("vespa-px125e", "278044", "281514", 1987, 1987, "Telaio VNX2T (serie Arcobaleno)"),
+
+        # Vespa PX 125 E Arcobaleno Elestart (VNX2T) - solo inizio noto
+        ("vespa-px125e-arcobaleno-elestart", "3000001", None, 1984, 1984, "Telaio VNX2T, fine range non documentata"),
+
+        # Vespa PX 125 T5 (VNX5T) - solo inizio noto
+        ("vespa-px125-t5-verificata", "1101", None, 1985, 1985, "Telaio VNX5T (trascrizione originale ambigua: 'VNXST'), fine range non documentata"),
+        ("vespa-px125-t5-verificata", "3000001", None, 1986, 1986, "Telaio VNX5T (Elestart), fine range non documentata"),
+
+        # Vespa 150 (VL1T, VL2T, VL3T, VB1T, VBA1T, VBB1T, VBB2T)
+        ("vespa-150-classic-verificata", "1001", "8173", 1954, 1954, "Telaio VL1T"),
+        ("vespa-150-classic-verificata", "8174", "17000", 1955, 1955, "Telaio VL1T"),
+        ("vespa-150-classic-verificata", "17001", "64970", 1955, 1955, "Telaio VL2T"),
+        ("vespa-150-classic-verificata", "64971", "93101", 1956, 1956, "Telaio VL2T"),
+        ("vespa-150-classic-verificata", "93102", "130693", 1956, 1956, "Telaio VL3T"),
+        ("vespa-150-classic-verificata", "130694", "132737", 1957, 1957, "Telaio VL3T"),
+        ("vespa-150-classic-verificata", "1001", "55375", 1957, 1957, "Telaio VB1T"),
+        ("vespa-150-classic-verificata", "55376", "99700", 1958, 1958, "Telaio VB1T"),
+        ("vespa-150-classic-verificata", "1001", "16515", 1958, 1958, "Telaio VBA1T"),
+        ("vespa-150-classic-verificata", "16516", "88519", 1959, 1959, "Telaio VBA1T"),
+        ("vespa-150-classic-verificata", "88520", "125040", 1960, 1960, "Telaio VBA1T"),
+        ("vespa-150-classic-verificata", "1001", "16070", 1960, 1960, "Telaio VBB1T"),
+        ("vespa-150-classic-verificata", "16071", "96683", 1961, 1961, "Telaio VBB1T"),
+        ("vespa-150-classic-verificata", "96684", "146000", 1962, 1962, "Telaio VBB1T"),
+        ("vespa-150-classic-verificata", "146001", "155712", 1962, 1962, "Telaio VBB2T"),
+        ("vespa-150-classic-verificata", "155713", "198232", 1963, 1963, "Telaio VBB2T"),
+        ("vespa-150-classic-verificata", "198233", "240757", 1964, 1964, "Telaio VBB2T"),
+        ("vespa-150-classic-verificata", "240758", "273260", 1965, 1965, "Telaio VBB2T"),
+
+        # Vespa 150 Super (VBC1T)
+        ("vespa-150-super-vbc1t", "1001", "4295", 1965, 1965, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "4296", "43413", 1966, 1966, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "43414", "61496", 1967, 1967, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "61497", "80740", 1968, 1968, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "80741", "100493", 1969, 1969, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "100494", "125619", 1970, 1970, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "125620", "151299", 1971, 1971, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "151300", "182205", 1972, 1972, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "182206", "221194", 1973, 1973, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "221195", "280314", 1974, 1974, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "280315", "351374", 1975, 1975, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "351375", "409392", 1976, 1976, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "409393", "476737", 1977, 1977, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "476738", "550121", 1978, 1978, "Telaio VBC1T"),
+        ("vespa-150-super-vbc1t", "550122", "554808", 1979, 1979, "Telaio VBC1T"),
+
+        # Vespa 150 GL / Sprint (VGL1T, VGLA1T, VGLB1T, VLA1T, VLB1T)
+        ("vespa-150-gl-sprint-verificata", "01001", "010842", 1957, 1957, "Telaio VGL1T"),
+        ("vespa-150-gl-sprint-verificata", "010843", "016610", 1958, 1958, "Telaio VGL1T"),
+        ("vespa-150-gl-sprint-verificata", "01001", "016000", 1959, 1959, "Telaio VGLA1T"),
+        ("vespa-150-gl-sprint-verificata", "016001", "031227", 1960, 1960, "Telaio VGLA1T"),
+        ("vespa-150-gl-sprint-verificata", "031228", "035267", 1961, 1961, "Telaio VGLA1T"),
+        ("vespa-150-gl-sprint-verificata", "035268", "043000", 1961, 1961, "Telaio VGLB1T"),
+        ("vespa-150-gl-sprint-verificata", "043001", "048294", 1962, 1962, "Telaio VGLB1T"),
+        ("vespa-150-gl-sprint-verificata", "01001", "05958", 1962, 1962, "Telaio VLA1T"),
+        ("vespa-150-gl-sprint-verificata", "05959", "057103", 1963, 1963, "Telaio VLA1T"),
+        ("vespa-150-gl-sprint-verificata", "057104", "078009", 1964, 1964, "Telaio VLA1T"),
+        ("vespa-150-gl-sprint-verificata", "078010", "080855", 1965, 1965, "Telaio VLA1T"),
+        ("vespa-150-gl-sprint-verificata", "01001", "026478", 1965, 1965, "Telaio VLB1T (inizio Sprint)"),
+        ("vespa-150-gl-sprint-verificata", "026479", "039230", 1966, 1966, "Telaio VLB1T"),
+        ("vespa-150-gl-sprint-verificata", "039231", "063336", 1967, 1967, "Telaio VLB1T (dal 050001 al 051523 il prefisso è VLB2T)"),
+        ("vespa-150-gl-sprint-verificata", "063337", "089260", 1968, 1968, "Telaio VLB1T"),
+        ("vespa-150-gl-sprint-verificata", "089261", "0108325", 1969, 1969, "Telaio VLB1T"),
+        ("vespa-150-gl-sprint-verificata", "0108326", "0132259", 1970, 1970, "Telaio VLB1T"),
+        ("vespa-150-gl-sprint-verificata", "0132260", "1150937", 1971, 1971, "Telaio VLB1T"),
+        ("vespa-150-gl-sprint-verificata", "1150937", "1205477", 1972, 1974, "Telaio VLB1T"),
+
+        # Vespa 150 Sprint Veloce (VLB1T, numerazione dedicata 0150001+)
+        ("vespa-150-sprint-veloce-verificata", "0150001", "0154384", 1969, 1969, "Telaio VLB1T (Sprint Veloce)"),
+        ("vespa-150-sprint-veloce-verificata", "0154385", "0159754", 1970, 1970, "Telaio VLB1T (Sprint Veloce)"),
+        ("vespa-150-sprint-veloce-verificata", "0159755", "0164041", 1971, 1971, "Telaio VLB1T (Sprint Veloce)"),
+        ("vespa-150-sprint-veloce-verificata", "164042", "169331", 1972, 1972, "Telaio VLB1T (Sprint Veloce)"),
+        ("vespa-150-sprint-veloce-verificata", "169332", "173345", 1973, 1973, "Telaio VLB1T (Sprint Veloce)"),
+        ("vespa-150-sprint-veloce-verificata", "173346", "213336", 1974, 1974, "Telaio VLB1T (Sprint Veloce)"),
+        ("vespa-150-sprint-veloce-verificata", "213337", "248469", 1975, 1975, "Telaio VLB1T (Sprint Veloce)"),
+        ("vespa-150-sprint-veloce-verificata", "248470", "294169", 1976, 1976, "Telaio VLB1T (Sprint Veloce)"),
+        ("vespa-150-sprint-veloce-verificata", "294170", "349628", 1977, 1977, "Telaio VLB1T (Sprint Veloce)"),
+        ("vespa-150-sprint-veloce-verificata", "349629", "367672", 1978, 1978, "Telaio VLB1T (Sprint Veloce)"),
+        ("vespa-150-sprint-veloce-verificata", "367673", "368119", 1979, 1979, "Telaio VLB1T (Sprint Veloce)"),
+
+        # Vespa P150S (VBX1T)
+        ("vespa-p150s", "1101", "10819", 1978, 1978, "Telaio VBX1T"),
+        ("vespa-p150s", "10280", "52138", 1979, 1979, "Telaio VBX1T"),
+        ("vespa-p150s", "52139", "85966", 1980, 1980, "Telaio VBX1T"),
+        ("vespa-p150s", "85967", "170765", 1981, 1981, "Telaio VBX1T"),
+        ("vespa-p150s", "170766", "203818", 1982, 1982, "Telaio VBX1T"),
+        ("vespa-p150s", "203819", "230729", 1983, 1983, "Telaio VBX1T"),
+        ("vespa-p150s", "230730", None, 1984, 1984, "Telaio VBX1T, fine range non documentata"),
+
+        # Vespa P150X, gamma completa (VBX1T)
+        ("vespa-p150x-full", "1001", "299155", 1978, 1990, "Telaio VBX1T"),
+
+        # Vespa P150X / PX150E / Arcobaleno EFL (VLX1T)
+        ("vespa-p150x-px150e", "1101", "67627", 1978, 1978, "Telaio VLX1T"),
+        ("vespa-p150x-px150e", "67628", "135880", 1979, 1979, "Telaio VLX1T"),
+        ("vespa-p150x-px150e", "135881", "240136", 1980, 1980, "Telaio VLX1T"),
+        ("vespa-p150x-px150e", "240137", "346402", 1981, 1981, "Telaio VLX1T"),
+        ("vespa-p150x-px150e", "346403", "363301", 1981, 1981, "Telaio VLX1T"),
+        ("vespa-p150x-px150e", "363302", "455339", 1982, 1982, "Telaio VLX1T"),
+        ("vespa-p150x-px150e", "455340", "503132", 1983, 1983, "Telaio VLX1T"),
+        ("vespa-p150x-px150e", "503133", None, 1984, 1984, "Telaio VLX1T, fine range non documentata"),
+        ("vespa-p150x-px150e", "600001", "605007", 1983, 1983, "Telaio VLX1T (serie Arcobaleno)"),
+        ("vespa-p150x-px150e", "605008", None, 1984, 1984, "Telaio VLX1T (serie Arcobaleno), fine range non documentata"),
+
+        # Vespa PX 150 Arcobaleno Elestart (VLX1T) - solo inizio noto
+        ("vespa-px150-arcobaleno-elestart", "3000001", None, 1984, 1984, "Telaio VLX1T, fine range non documentata"),
+
+        # Vespa 150 GS - 160 GS (VS1T-VS5T, VSB1T)
+        ("vespa-150gs-160gs-verificata", "001001", "0013300", 1955, 1955, "Telaio VS1T (inizio 150)"),
+        ("vespa-150gs-160gs-verificata", "0013301", "0023310", 1956, 1956, "Telaio VS2T"),
+        ("vespa-150gs-160gs-verificata", "0023311", "0035310", 1957, 1957, "Telaio VS3T"),
+        ("vespa-150gs-160gs-verificata", "0035311", "0047350", 1958, 1958, "Telaio VS4T"),
+        ("vespa-150gs-160gs-verificata", "0047351", "0052363", 1958, 1958, "Telaio VS5T"),
+        ("vespa-150gs-160gs-verificata", "0052364", "0070128", 1959, 1959, "Telaio VS5T"),
+        ("vespa-150gs-160gs-verificata", "0070129", "00104731", 1960, 1960, "Telaio VS5T"),
+        ("vespa-150gs-160gs-verificata", "00104732", "00127350", 1961, 1961, "Telaio VS5T"),
+        ("vespa-150gs-160gs-verificata", "001001", "0029970", 1962, 1962, "Telaio VSB1T (inizio 160)"),
+        ("vespa-150gs-160gs-verificata", "0029971", "00482501", 1963, 1963, "Telaio VSB1T"),
+        ("vespa-150gs-160gs-verificata", "0048251", "0061000", 1964, 1964, "Telaio VSB1T"),
+
+        # Vespa 180 SS (VSC1T)
+        ("vespa-180-ss-vsc1t", "001001", "003120", 1964, 1964, "Telaio VSC1T"),
+        ("vespa-180-ss-vsc1t", "003121", "0019720", 1965, 1965, "Telaio VSC1T"),
+        ("vespa-180-ss-vsc1t", "0019721", "0025673", 1966, 1966, "Telaio VSC1T"),
+        ("vespa-180-ss-vsc1t", "0025674", "0032632", 1967, 1967, "Telaio VSC1T"),
+        ("vespa-180-ss-vsc1t", "0032633", "0036700", 1968, 1968, "Telaio VSC1T"),
+
+        # Vespa 180 Rally (VSD1T)
+        ("vespa-180-rally-verificata", "001001", "005328", 1968, 1968, "Telaio VSD1T"),
+        ("vespa-180-rally-verificata", "005329", "0011537", 1969, 1969, "Telaio VSD1T"),
+        ("vespa-180-rally-verificata", "0011538", "0017810", 1970, 1970, "Telaio VSD1T"),
+        ("vespa-180-rally-verificata", "0017811", "0023348", 1971, 1971, "Telaio VSD1T"),
+        ("vespa-180-rally-verificata", "0023348", "0027495", 1972, 1973, "Telaio VSD1T"),
+
+        # Vespa 200 Rally (VSE1T)
+        ("vespa-200-rally-verificata", "001001", "0042275", 1972, 1979, "Telaio VSE1T"),
+
+        # Vespa P200X / PX200E / Arcobaleno EFL (VSX1T)
+        ("vespa-p200x-px200e", "100", "1700", 1977, 1977, "Telaio VSX1T"),
+        ("vespa-p200x-px200e", "1101", "2041", 1977, 1977, "Telaio VSX1T"),
+        ("vespa-p200x-px200e", "2042", "15227", 1978, 1978, "Telaio VSX1T"),
+        ("vespa-p200x-px200e", "15228", "36559", 1979, 1979, "Telaio VSX1T"),
+        ("vespa-p200x-px200e", "36560", "73334", 1980, 1980, "Telaio VSX1T"),
+        ("vespa-p200x-px200e", "73335", "116614", 1981, 1981, "Telaio VSX1T"),
+        ("vespa-p200x-px200e", "116615", "160000", 1982, 1982, "Telaio VSX1T"),
+        ("vespa-p200x-px200e", "160001", "165842", 1982, 1982, "Telaio VSX1T"),
+        ("vespa-p200x-px200e", "165843", "184910", 1983, 1983, "Telaio VSX1T"),
+        ("vespa-p200x-px200e", "184911", "195545", 1984, 1986, "Telaio VSX1T (esiste anche una seconda serie aperta da 312000 in poi)"),
+        ("vespa-p200x-px200e", "300001", "304224", 1983, 1983, "Telaio VSX1T (serie Arcobaleno)"),
+        ("vespa-p200x-px200e", "304225", None, 1984, 1984, "Telaio VSX1T (serie Arcobaleno), fine range non documentata"),
+
+        # Vespa PX 200 E Arcobaleno Elestart (VSX1T)
+        ("vespa-px200e-arcobaleno-elestart", "3000001", "3022538", 1981, 1990, "Telaio VSX1T"),
+    ]
+
+    real_chassis_values = []
+    for slug, start, end, y_start, y_end, notes in real_chassis_data:
+        if slug in model_ids:
+            real_chassis_values.append((model_ids[slug], start, end, y_start, y_end, notes))
+
+    cursor.executemany(
+        "INSERT INTO vespa_chassis_numbers (model_id, number_start, number_end, year_start, year_end, notes) VALUES (?, ?, ?, ?, ?, ?)",
+        real_chassis_values
+    )
+    conn.commit()
+
+    # =========================================================
     # COLORS
     # =========================================================
     colors_data = [
